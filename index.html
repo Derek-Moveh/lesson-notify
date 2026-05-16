@@ -1,0 +1,177 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notifier</title>
+    <style>
+
+        body{
+            margin: 40px;
+            padding-bottom: 50px;
+        }
+
+        h1{
+            text-align: center;
+            color: aqua;
+            padding: 60px;
+        }
+
+        strong{
+            color: #1e3a8a;
+            font-size: 40px;
+        }
+
+        h2{
+          font-size: 50px;
+          color: blue;  
+        }
+
+        li{
+            font-size: 30px;
+            color: rgb(16, 185, 129);
+        }
+
+        button{
+            border-radius: 20px;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            padding-left: 30px;
+            padding-right: 30px;
+            color: white;
+            border-color: white;
+        }
+
+        .article{
+            color: rgb(16, 185, 129);
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <style>
+        /* Live Moving Gradient Wallpaper Background */
+body {
+    background: linear-gradient(-45deg, #f4f6f9, #e2e8f0, #eef2f6, #e0e7ff) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Gives the white form card a modern floating effect over the moving background */
+.main-container {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+    </style>
+    <header>
+        <h1><svg xmlns="http://w3.org" viewBox="0 0 450 80" width="100%" height="auto">
+  <defs>
+    <!-- Background Gradient for the Icon -->
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+
+  <!-- --- ICON PART --- -->
+  <!-- Main Schedule Board Shape -->
+  <rect x="10" y="10" width="55" height="60" rx="10" fill="url(#iconGrad)" />
+  
+  <!-- Horizontal Timetable Lines (School Grid) -->
+  <line x1="22" y1="28" x2="53" y2="28" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+  <line x1="22" y1="40" x2="45" y2="40" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+  <line x1="22" y1="52" x2="50" y2="52" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+  
+  <!-- Active Notification Bell / Ping Ring -->
+  <circle cx="53" cy="22" r="11" fill="#10b981" stroke="#ffffff" stroke-width="2.5" />
+  <!-- Small Inner Bell Icon White Dot -->
+  <circle cx="53" cy="22" r="4" fill="#ffffff" />
+
+  <!-- --- TEXT PART --- -->
+  <!-- "Lesson" Text in Deep National Blue -->
+  <text x="85" y="52" font-family="'Segoe UI', system-ui, sans-serif" font-size="36" font-weight="800" fill="#1e3a8a" letter-spacing="-0.5">Lesson</text>
+  
+  <!-- "Notify" Text in Vibrant Notification Green -->
+  <text x="215" y="52" font-family="'Segoe UI', system-ui, sans-serif" font-size="36" font-weight="800" fill="#10b981" letter-spacing="-0.5">Notify</text>
+  
+  <!-- Tiny National Badge (Optional Accent) -->
+  <rect x="345" y="27" width="45" height="22" rx="4" fill="#e2e8f0" />
+  <text x="353" y="42" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" font-weight="700" fill="#475569" letter-spacing="0.5">NATL</text>
+</svg>
+</h1>
+        <h2>National School Timetable Network</h2>
+    </header>
+
+        <!-- Brief Article Content -->
+        <div class="info-section">
+            <p style="color: rgb(16, 185, 129;"><strong>Never miss a period again.</strong><p class="article"> is a simple, national school timetable platform built to keep teachers on time and informed.</p></p>
+            
+            <ul class="info-list">
+                <li><span>🚀</span> <strong>Instant Notifications:</strong> Get a browser alert 5 minutes before your next class starts.</li>
+                <li><span>⏱️</span> <strong>Live Countdown:</strong> See your current lesson and exactly how many minutes are remaining.</li>
+                <li><span>🔄</span> <strong>Real-Time Updates:</strong> When school admins adjust the schedule, your dashboard updates instantly.</li>
+            </ul>
+        </div>
+
+        <button style="background-color : blue;">Book a Space</button>
+        <button style="background-color: rgb(16, 185, 129);">Start Now</button>
+
+        <!-- Simple Footer -->
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+    <p style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">
+        &copy; 2026 <strong>LessonNotify</strong>. All National Rights Reserved.
+    </p>
+    <div style="font-size: 12px;">
+        <a href="#" style="color: #1e3a8a; text-decoration: none; margin: 0 10px; font-weight: 500;">Privacy Policy</a> | 
+        <a href="#" style="color: #1e3a8a; text-decoration: none; margin: 0 10px; font-weight: 500;">Admin Support</a>
+    </div>
+</footer>
+
+<!-- Live Canvas Overlay for Mouse Particles -->
+<canvas id="particleBg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+
+<script>
+    const canvas = document.getElementById('particleBg');
+    const ctx = canvas.getContext('2d');
+    let pArray = [];
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class P {
+        constructor(x, y) {
+            this.x = x; this.y = y;
+            this.size = Math.random() * 3 + 1.5;
+            this.sx = Math.random() * 1 - 0.5;
+            this.sy = Math.random() * -1 - 0.3;
+            this.a = 1;
+        }
+        up() { this.x += this.sx; this.y += this.sy; this.a -= 0.015; }
+        dr() { ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fillStyle = '#10b981'; ctx.fill(); ctx.restore(); }
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.75) pArray.push(new P(e.clientX, e.clientY));
+    });
+
+    function anim() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < pArray.length; i++) {
+            pArray[i].up(); pArray[i].dr();
+            if (pArray[i].a <= 0) { pArray.splice(i, 1); i--; }
+        }
+        requestAnimationFrame(anim);
+    }
+    anim();
+</script>
+
+</body>
+</html>

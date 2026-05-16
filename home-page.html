@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LessonNotify - Select School</title>
+    <style>
+        /* Modern Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container Card */
+        .login-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Logo and Header Styling */
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a8a; /* Deep National Blue */
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: #10b981; /* Notification Green */
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h2 {
+            color: #1f2937;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .instruction {
+            color: #4b5563;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1f2937;
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        /* Primary Button */
+        .btn-proceed {
+            width: 100%;
+            padding: 14px;
+            background-color: #1e3a8a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-proceed:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Footer Links */
+        .footer-link {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .footer-link a {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <!-- Brand Logo -->
+        <div class="logo">
+            📋 Lesson<span>Notify</span>
+        </div>
+        <div class="subtitle">National School Timetable Network</div>
+
+        <!-- Section Headers -->
+        <h2>Welcome to LessonNotify</h2>
+        <p class="instruction">Please select your school location to proceed to your login portal.</p>
+
+        <!-- Dropdown Form -->
+        <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Redirecting to Teacher Login...');">
+            
+            <div class="form-group">
+                <label for="state">Select Your State:</label>
+                <select id="state" name="state" required>
+                    <option value="" disabled selected>-- Choose State --</option>
+                    <option value="fct">FCT (Abuja)</option>
+                    <option value="lagos">Lagos State</option>
+                    <option value="kano">Kano State</option>
+                    <option value="rivers">Rivers State</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="school">Select Your School:</label>
+                <select id="school" name="school" required>
+                    <option value="" disabled selected>-- Choose School --</option>
+                    <option value="gss_wuse">Government Secondary School, Wuse</option>
+                    <option value="kings_college">King's College, Lagos</option>
+                    <option value="ggss_garki">Government Girls Secondary School, Garki</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-proceed">
+                Proceed to Login ➡️
+            </button>
+        </form>
+
+        <!-- Registration Link -->
+        <div class="footer-link">
+            Need to register your school? <a href="#">Click Here</a>
+        </div>
+    </div>
+
+</body>
+</html>

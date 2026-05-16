@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LessonNotify - Loading Network...</title>
+    <style>
+        /* Base Setup */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Centered Layout Wrapper */
+        .loading-wrapper {
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            padding: 20px;
+        }
+
+        /* Smooth Floating Animation for Logo Block */
+        .logo-container {
+            margin-bottom: 30px;
+            animation: float 2.5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Outer Tracking Bar Background */
+        .progress-track {
+            background-color: #e2e8f0;
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        /* Moving Internal Loading Bar */
+        .progress-bar {
+            background-color: #10b981; /* Notification Green */
+            width: 0%;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        /* Network Status Text */
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-wrapper">
+        
+        <!-- Coded SVG Logo Wrapper -->
+        <div class="logo-container">
+            <svg xmlns="http://w3.org" viewBox="0 0 450 80" width="100%" height="auto">
+                <defs>
+                    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#1e3a8a" />
+                        <stop offset="100%" stop-color="#1d4ed8" />
+                    </linearGradient>
+                </defs>
+                <rect x="10" y="10" width="55" height="60" rx="10" fill="url(#iconGrad)" />
+                <line x1="22" y1="28" x2="53" y2="28" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+                <line x1="22" y1="40" x2="45" y2="40" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+                <line x1="22" y1="52" x2="50" y2="52" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.4" />
+                <circle cx="53" cy="22" r="11" fill="#10b981" stroke="#ffffff" stroke-width="2.5" />
+                <circle cx="53" cy="22" r="4" fill="#ffffff" />
+                <text x="85" y="52" font-family="'Segoe UI', system-ui, sans-serif" font-size="36" font-weight="800" fill="#1e3a8a" letter-spacing="-0.5">Lesson</text>
+                <text x="215" y="52" font-family="'Segoe UI', system-ui, sans-serif" font-size="36" font-weight="800" fill="#10b981" letter-spacing="-0.5">Notify</text>
+            </svg>
+        </div>
+
+        <!-- Progress Elements -->
+        <div class="progress-track">
+            <div class="progress-bar" id="loadBar"></div>
+        </div>
+        
+        <!-- Status Indicator Text -->
+        <div class="status-text" id="statusMessage">Connecting to Network...</div>
+    </div>
+
+    <!-- Active Loading Script Logic -->
+    <script>
+        const progressBar = document.getElementById('loadBar');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        let progress = 0;
+
+        // Simple status messages that update as it loads
+        const textUpdates = [
+            { threshold: 10, text: "Connecting to Network..." },
+            { threshold: 45, text: "Syncing School Timetables..." },
+            { threshold: 75, text: "Loading Secure Interface..." }
+        ];
+
+        const interval = setInterval(() => {
+            progress += 2; // Increase speed by changing this number
+            progressBar.style.width = progress + '%';
+
+            // Check and update status text based on current percentage
+            textUpdates.forEach(update => {
+                if (progress >= update.threshold) {
+                    statusMessage.innerText = update.text;
+                }
+            });
+
+            // Loading completes
+            if (progress >= 100) {
+                clearInterval(interval);
+                statusMessage.innerText = "Ready!";
+                
+                // Redirect straight to your main homepage file (index.html)
+                setTimeout(() => {
+                    window.location.href = "index.html"; 
+                }, 400);
+            }
+        }, 50); // Updates progress bar fluidly every 50 milliseconds
+    </script>
+
+</body>
+</html>
