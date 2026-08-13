@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>Lesson Notify — Security Access Gate</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; }
+        body { 
+            background: #06080f;
+            color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+            overflow-x: hidden; position: relative;
+        }
+
+        /* LIGHT MODE OVERRIDES */
+        body.light-theme {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+        body.light-theme .auth-card {
+            background: rgba(255, 255, 255, 0.88);
+            border-color: rgba(226, 232, 240, 0.9);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        }
+        body.light-theme .auth-card:hover {
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.08), 0 0 30px rgba(16, 185, 129, 0.1);
+        }
+        body.light-theme .logo-wrapper {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+        body.light-theme h2 { color: #0f172a; }
+        body.light-theme .subtitle { color: #475569; }
+        body.light-theme label { color: #334155; }
+        body.light-theme input, body.light-theme select {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        body.light-theme input:focus, body.light-theme select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        #liveWallpaper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .auth-card { 
+            background: rgba(11, 15, 25, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; position: relative; z-index: 1;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .auth-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.15), 0 0 60px rgba(37, 99, 235, 0.1);
+        }
+        .logo-wrapper { 
+            max-width: 160px; margin: 0 auto 25px auto; background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 6px; 
+        }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: #64748b; font-size: 13.5px; margin-bottom: 30px; }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        label { display: block; font-size: 12.5px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select { width: 100%; padding: 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #ffffff; font-size: 14.5px; transition: all 0.25s ease; }
+        input:focus, select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        .btn-submit { 
+            background: linear-gradient(-45deg, #10b981, #2563eb); background-size: 200% 200%;
+            color: #ffffff; border: none; padding: 14px; width: 100%; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
+        .toggle-link { color: #10b981; text-decoration: none; font-size: 13.5px; font-weight: 600; display: inline-block; margin-top: 20px; cursor: pointer; transition: color 0.2s; }
+        .toggle-link:hover { color: #34d399; }
+        .error-banner { display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- High-Tech Live Wallpaper Canvas -->
+    <canvas id="liveWallpaper"></canvas>
+
+    <div class="auth-card">
+        <div class="logo-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 80" width="100%" height="auto">
+              <rect x="10" y="10" width="55" height="60" rx="10" fill="#1e40af" />
+              <circle cx="53" cy="22" r="11" fill="#10b981" stroke="#06080f" stroke-width="2.5" />
+              <text x="85" y="52" font-family="sans-serif" font-size="38" font-weight="900" fill="#ffffff">Lesson</text>
+              <text x="215" y="52" font-family="sans-serif" font-size="38" font-weight="900" fill="#10b981">Notify</text>
+            </svg>
+        </div>
+
+        <h2 id="authTitle">Create Your Account</h2>
+        <p class="subtitle" id="authSubtitle">Get started managing institutional timetable automated notifications.</p>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <form id="authForm">
+            <div class="form-group" id="nameGroup">
+                <label>Full Name</label>
+                <input type="text" id="authName" placeholder="e.g., Derek Moveh">
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="authEmail" placeholder="name@institution.com" required>
+            </div>
+
+            <div class="form-group" id="phoneGroup">
+                <label>Active Phone Number (With Country Code)</label>
+                <input type="text" id="authPhone" placeholder="e.g., 2348030000000">
+            </div>
+            
+            <div class="form-group">
+                <label>Security Password</label>
+                <input type="password" id="authPassword" placeholder="••••••••" required>
+            </div>
+
+            <div class="form-group" id="roleGroup">
+                <label>Your Institutional Role</label>
+                <select id="signupRole" required>
+                    <option value="admin">Facility Administrator / Owner</option>
+                    <option value="teacher">Faculty Instructor / Lecturer</option>
+                    <option value="student">Enrolled Student / Learner</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="schoolGroup">
+                <label>Institution / School Name</label>
+                <input type="text" id="signupSchool" placeholder="e.g., 360 Mass Hub" required>
+                <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Admins: Enter your new school name. Staff/Students: Enter your existing facility name exactly.</p>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btnSubmit">Register Workspace</button>
+        </form>
+
+        <span class="toggle-link" id="authToggle">Already have an account? Sign In</span>
+    </div>
+
+    <script>
+        // Sync theme with localStorage preference set from welcome.html
+        if (localStorage.getItem('lesson_notify_theme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+
+        // High-Tech Live Wallpaper Animation Logic
+        const canvas = document.getElementById('liveWallpaper');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.7;
+                this.vy = (Math.random() - 0.5) * 0.7;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 70; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateWallpaper() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 130) {
+                        ctx.strokeStyle = `rgba(37, 99, 235, ${0.18 * (1 - dist / 130)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateWallpaper);
+        }
+        animateWallpaper();
+
+        // Check URL parameters to determine initial mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const modeParam = urlParams.get('mode');
+        let isSignUpMode = modeParam !== 'signin';
+
+        const authForm = document.getElementById('authForm');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const authToggle = document.getElementById('authToggle');
+        const nameGroup = document.getElementById('nameGroup');
+        const phoneGroup = document.getElementById('phoneGroup');
+        const roleGroup = document.getElementById('roleGroup');
+        const schoolGroup = document.getElementById('schoolGroup');
+        const errorBanner = document.getElementById('errorBanner');
+
+        function renderAuthState() {
+            errorBanner.style.display = 'none';
+            
+            if (isSignUpMode) {
+                authTitle.textContent = "Create Your Account";
+                authSubtitle.textContent = "Get started managing institutional timetable automated notifications.";
+                btnSubmit.textContent = "Register Workspace";
+                authToggle.textContent = "Already have an account? Sign In";
+                nameGroup.style.display = "block";
+                phoneGroup.style.display = "block";
+                roleGroup.style.display = "block";
+                schoolGroup.style.display = "block";
+            } else {
+                authTitle.textContent = "Welcome Back";
+                authSubtitle.textContent = "Enter your security details to open your system workspace dashboard.";
+                btnSubmit.textContent = "Secure Sign In";
+                authToggle.textContent = "Don't have an account? Sign Up";
+                nameGroup.style.display = "none";
+                phoneGroup.style.display = "none";
+                roleGroup.style.display = "none";
+                schoolGroup.style.display = "none";
+            }
+        }
+
+        renderAuthState();
+
+        authToggle.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            renderAuthState();
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorBanner.style.display = 'none';
+
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = isSignUpMode ? document.getElementById('authName').value : '';
+            const role = document.getElementById('signupRole').value;
+            const phone = isSignUpMode ? document.getElementById('authPhone').value : '';
+            const school_name = isSignUpMode ? document.getElementById('signupSchool').value : '';
+
+            const endpoint = isSignUpMode ? '/api/auth/signup' : '/api/auth/signin';
+            const payload = isSignUpMode ? { email, password, name, role, phone, school_name } : { email, password };
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || "Authentication security trace rejected entry parameters.");
+                }
+
+                localStorage.setItem('ln_user_token', data.token);
+                localStorage.setItem('ln_user_role', data.role);
+                localStorage.setItem('ln_user_name', data.name || "User");
+                localStorage.setItem('ln_user_school_id', data.school_id);
+
+                // Role-based redirection logic
+                if (data.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else if (data.role === 'teacher') {
+                    window.location.href = 'teacher.html';
+                } else if (data.role === 'student') {
+                    window.location.href = 'student.html';
+                } else {
+                    window.location.href = 'admin.html';
+                }
+
+            } catch (err) {
+                errorBanner.textContent = `⚠️ Security Alert: ${err.message}`;
+                errorBanner.style.display = 'block';
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('🚀 Lesson Notify PWA Core Active!', reg.scope))
+                    .catch(err => console.warn('PWA registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

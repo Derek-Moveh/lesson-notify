@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notify — My Settings</title>
+    <style>
+        /* --- CSS Variables for Student Theme --- */
+        :root {
+            --bg-main: #050810;
+            --bg-panel: #0b0f19;
+            --card-bg: #111624;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.03);
+            --accent-purple: #8b5cf6;
+            --accent-purple-hover: #9333ea;
+            --accent-purple-bg: rgba(139, 92, 246, 0.12);
+            --accent-purple-glow: rgba(139, 92, 246, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-main: #f1f5f9;
+            --bg-panel: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-alt: #1e293b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --accent-purple-bg: rgba(139, 92, 246, 0.12);
+            --accent-purple-glow: rgba(139, 92, 246, 0.15);
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Live Hover Expandable Sidebar --- */
+        .sidebar {
+            width: 70px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            padding-top: 20px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 200;
+            overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .sidebar-brand {
+            display: flex; align-items: center; padding: 0 23px; margin-bottom: 30px;
+            color: var(--text-main); font-size: 18px; font-weight: 800;
+            white-space: nowrap; cursor: pointer;
+        }
+        .sidebar-brand svg { min-width: 24px; margin-right: 16px; color: #10b981; }
+        
+        .sidebar-brand-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sidebar:hover .sidebar-brand-text {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
+        
+        .sidebar-item {
+            display: flex; align-items: center; padding: 12px 14px;
+            color: var(--text-muted); text-decoration: none;
+            border-radius: 8px; font-size: 14.5px; font-weight: 500;
+            position: relative; white-space: nowrap;
+            transition: background 0.25s, color 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover {
+            background: var(--accent-purple-bg);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px var(--accent-purple-glow);
+        }
+
+        .sidebar-item.active { 
+            background: var(--accent-purple-bg); 
+            color: var(--accent-purple); 
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--accent-purple);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--accent-purple);
+        }
+
+        .sidebar-icon { 
+            min-width: 20px;
+            height: 20px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: transform 0.2s ease; 
+        }
+
+        .sidebar-item:hover .sidebar-icon {
+            transform: scale(1.15);
+            color: var(--accent-purple);
+        }
+
+        .sidebar-label {
+            opacity: 0;
+            margin-left: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-label {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex: 1; 
+            margin-left: 70px;
+            display: flex; 
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        header {
+            background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-title { font-weight: 700; font-size: 18px; color: var(--text-alt); }
+        .header-right { display: flex; align-items: center; gap: 20px; font-size: 13.5px; color: var(--text-muted); }
+        
+        .badge-enrolled {
+            background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);
+            padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid rgba(139, 92, 246, 0.3);
+            margin-left: 10px;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; padding: 6px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-logout:hover { 
+            background: rgba(239, 68, 68, 0.25); 
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* --- Settings Layout --- */
+        .dashboard-container { max-width: 900px; width: 100%; margin: 30px auto; padding: 0 20px; }
+
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .page-header p { color: var(--text-muted); font-size: 14.5px; }
+
+        .settings-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 25px; margin-bottom: 24px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+
+        .settings-card h2 {
+            font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .settings-card p.card-desc { font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px; }
+
+        /* --- Persona Avatar & Profile Styling --- */
+        .persona-container {
+            display: flex; gap: 24px; align-items: center; padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-upload-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+
+        .persona-avatar {
+            width: 86px; height: 86px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), #10b981);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: #ffffff;
+            box-shadow: 0 4px 15px var(--accent-purple-glow); flex-shrink: 0;
+            position: relative; overflow: hidden; cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        .persona-avatar img {
+            width: 100%; height: 100%; object-fit: cover; display: none;
+        }
+
+        /* Hover Overlay for Photo Upload */
+        .avatar-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s ease; color: #ffffff;
+            font-size: 11px; font-weight: 600; text-align: center; gap: 2px;
+        }
+
+        .persona-avatar:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .btn-remove-photo {
+            background: transparent; border: none; color: #ef4444;
+            font-size: 12px; font-weight: 600; cursor: pointer; display: none;
+            transition: opacity 0.2s;
+        }
+        .btn-remove-photo:hover { text-decoration: underline; }
+
+        .persona-details h3 { font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .persona-role { font-size: 13.5px; color: var(--accent-purple); font-weight: 600; margin-top: 2px; }
+        .persona-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .persona-tag {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+            color: var(--text-muted); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+        }
+
+        .setting-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid var(--border-subtle);
+        }
+        .setting-row:last-child { border-bottom: none; }
+
+        .setting-info { max-width: 70%; }
+        .setting-title { font-size: 14.5px; font-weight: 600; color: var(--text-alt); }
+        .setting-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Form Inputs & Selects */
+        .input-field {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 10px 14px; border-radius: 8px;
+            font-size: 14px; outline: none; width: 100%; max-width: 320px;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: var(--accent-purple); }
+        textarea.input-field { resize: vertical; min-height: 70px; }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative; display: inline-block; width: 48px; height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1); transition: .3s; border-radius: 34px;
+            border: 1px solid var(--border-color);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: #ffffff; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-purple); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-save {
+            background: var(--accent-purple); color: #ffffff; border: none;
+            padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: all 0.2s ease; margin-top: 10px;
+        }
+        .btn-save:hover {
+            background: var(--accent-purple-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--accent-purple-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hover Expandable Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="sidebar-brand-text">LessonNotify</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-item" href="student.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">My Overview</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="student_schedule.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <span class="sidebar-label">Full Schedule</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="student_resources.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <span class="sidebar-label">Resources & Materials</span>
+                </a>
+            </li>
+            <li style="margin-top: 20px;">
+                <a class="sidebar-item active" href="student_settings.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">My Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <header>
+            <div class="header-title">Participant Settings <span class="badge-enrolled">Enrolled</span></div>
+            <div class="header-right">
+                <span id="studentNameDisplay">Student / Member</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="page-header">
+                <h1>Account & Preferences</h1>
+                <p>Manage your profile photo, notification preferences, user persona, and portal appearance.</p>
+            </div>
+
+            <!-- User Persona & Profile Picture -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    User Persona & Profile Picture
+                </h2>
+                <p class="card-desc">Click the avatar below to upload or change your profile image.</p>
+
+                <div class="persona-container">
+                    <div class="avatar-upload-wrapper">
+                        <!-- Clickable Avatar -->
+                        <div class="persona-avatar" id="avatarContainer" onclick="document.getElementById('avatarFileInput').click()">
+                            <img id="avatarImage" src="" alt="Profile Photo">
+                            <span id="avatarInitials">AJ</span>
+                            <div class="avatar-overlay">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                Change
+                            </div>
+                        </div>
+                        <!-- Hidden File Input -->
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                        <button class="btn-remove-photo" id="btnRemovePhoto">Remove photo</button>
+                    </div>
+
+                    <div class="persona-details">
+                        <h3 id="personaDisplayName">Alex Johnson</h3>
+                        <div class="persona-role" id="personaRoleDisplay">UI/UX & Frontend Student</div>
+                        <div class="persona-tags">
+                            <span class="persona-tag">Cohort 2026-A</span>
+                            <span class="persona-tag">Full-Time Track</span>
+                            <span class="persona-tag">Active Participant</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Display Name</div>
+                        <div class="setting-subtitle">Shown across session rosters and mentor check-ins</div>
+                    </div>
+                    <input type="text" class="input-field" id="inputName" value="Alex Johnson">
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Specialization Track</div>
+                        <div class="setting-subtitle">Determines recommended resources and calendar feeds</div>
+                    </div>
+                    <select class="input-field" id="selectTrack">
+                        <option value="UI/UX & Frontend Student">UI/UX & Frontend Frameworks</option>
+                        <option value="Full Stack Development Student">Full Stack Web Development</option>
+                        <option value="Product Design Student">Digital Product Design</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Learning Goals & Bio</div>
+                        <div class="setting-subtitle">Brief background visible to assigned session mentors</div>
+                    </div>
+                    <textarea class="input-field" id="inputBio" placeholder="e.g., Focus on mastering React components and Figma prototypes.">Focused on building interactive frontend systems and clean user interfaces.</textarea>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    Notifications & Alerts
+                </h2>
+                <p class="card-desc">Configure how and when you want to receive class alerts.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">10-Minute Class Reminders</div>
+                        <div class="setting-subtitle">Receive an instant browser push notification prior to start</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="notifyPush" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Email Summaries</div>
+                        <div class="setting-subtitle">Daily morning digest of scheduled sessions</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="notifyEmail" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Interface Theme -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    Appearance Theme
+                </h2>
+                <p class="card-desc">Customize interface color scheme across all portal pages.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Light Mode</div>
+                        <div class="setting-subtitle">Switch between modern dark aesthetic and clean light mode</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleTheme">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-save" id="btnSaveSettings">Save Preferences</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Theme Manager ---
+        const themeToggle = document.getElementById('toggleTheme');
+        const savedTheme = localStorage.getItem('lesson_notify_theme');
+
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('lesson_notify_theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('lesson_notify_theme', 'dark');
+            }
+        });
+
+        // --- Avatar Upload & Preview Logic ---
+        const avatarFileInput = document.getElementById('avatarFileInput');
+        const avatarImage = document.getElementById('avatarImage');
+        const avatarInitials = document.getElementById('avatarInitials');
+        const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+
+        function setAvatarDisplay(photoDataUrl) {
+            if (photoDataUrl) {
+                avatarImage.src = photoDataUrl;
+                avatarImage.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                btnRemovePhoto.style.display = 'inline-block';
+            } else {
+                avatarImage.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                btnRemovePhoto.style.display = 'none';
+            }
+        }
+
+        // Handle File Selection
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Check if file size is reasonable (e.g. < 3MB)
+                if (file.size > 3 * 1024 * 1024) {
+                    alert('Please select an image smaller than 3MB.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const dataUrl = evt.target.result;
+                    localStorage.setItem('ln_user_avatar', dataUrl);
+                    setAvatarDisplay(dataUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle Remove Photo
+        btnRemovePhoto.addEventListener('click', () => {
+            localStorage.removeItem('ln_user_avatar');
+            avatarFileInput.value = '';
+            setAvatarDisplay(null);
+        });
+
+        // --- Load & Sync Persona Data ---
+        const studentName = localStorage.getItem('ln_user_name') || 'Alex Johnson';
+        const studentTrack = localStorage.getItem('ln_user_track') || 'UI/UX & Frontend Student';
+        const studentBio = localStorage.getItem('ln_user_bio') || 'Focused on building interactive frontend systems and clean user interfaces.';
+        const savedAvatar = localStorage.getItem('ln_user_avatar');
+
+        function updatePersonaDisplay(name, track, bio) {
+            document.getElementById('studentNameDisplay').textContent = name;
+            document.getElementById('personaDisplayName').textContent = name;
+            document.getElementById('inputName').value = name;
+            
+            document.getElementById('personaRoleDisplay').textContent = track;
+            document.getElementById('selectTrack').value = track;
+            document.getElementById('inputBio').value = bio;
+
+            // Generate Initials Fallback
+            const nameParts = name.trim().split(' ');
+            const initials = nameParts.length > 1 
+                ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                : (nameParts[0][0] || 'A').toUpperCase();
+            avatarInitials.textContent = initials;
+        }
+
+        // Initialize Settings & Avatar
+        updatePersonaDisplay(studentName, studentTrack, studentBio);
+        setAvatarDisplay(savedAvatar);
+
+        // Save Settings Handler
+        document.getElementById('btnSaveSettings').addEventListener('click', () => {
+            const newName = document.getElementById('inputName').value.trim();
+            const newTrack = document.getElementById('selectTrack').value;
+            const newBio = document.getElementById('inputBio').value.trim();
+
+            if (newName) {
+                localStorage.setItem('ln_user_name', newName);
+                localStorage.setItem('ln_user_track', newTrack);
+                localStorage.setItem('ln_user_bio', newBio);
+
+                updatePersonaDisplay(newName, newTrack, newBio);
+                alert('Profile and settings saved successfully!');
+            }
+        });
+
+        // Logout Handler
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+    </script>
+</body>
+</html>

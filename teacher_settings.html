@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Portal — Settings</title>
+    <style>
+        /* --- CSS Variables for Instructor Theme (Emerald Accent) --- */
+        :root {
+            --bg-main: #050810;
+            --bg-panel: #0b0f19;
+            --card-bg: #0d1322;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --accent-green: #10b981;
+            --accent-green-hover: #059669;
+            --accent-green-bg: rgba(16, 185, 129, 0.12);
+            --accent-green-glow: rgba(16, 185, 129, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-main: #f1f5f9;
+            --bg-panel: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-alt: #1e293b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --accent-green-bg: rgba(16, 185, 129, 0.12);
+            --accent-green-glow: rgba(16, 185, 129, 0.15);
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Live Hover Expandable Sidebar --- */
+        .sidebar {
+            width: 70px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            padding-top: 20px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 200;
+            overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .sidebar-brand {
+            display: flex; align-items: center; padding: 0 22px; margin-bottom: 30px;
+            color: var(--text-main); font-size: 18px; font-weight: 800;
+            white-space: nowrap; cursor: pointer;
+        }
+        .sidebar-brand svg { min-width: 24px; margin-right: 16px; color: var(--accent-green); }
+        
+        .sidebar-brand-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sidebar:hover .sidebar-brand-text {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        .sidebar-menu { 
+            list-style: none; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            padding: 0 12px; 
+            height: 100%;
+        }
+        
+        .sidebar-item {
+            display: flex; align-items: center; padding: 12px 14px;
+            color: var(--text-muted); text-decoration: none;
+            border-radius: 8px; font-size: 14.5px; font-weight: 500;
+            position: relative; white-space: nowrap;
+            transition: background 0.25s, color 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover {
+            background: var(--accent-green-bg);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px var(--accent-green-glow);
+        }
+
+        .sidebar-item.active { 
+            background: var(--accent-green-bg); 
+            color: var(--accent-green); 
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--accent-green);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .sidebar-icon { 
+            min-width: 20px;
+            height: 20px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: transform 0.2s ease; 
+        }
+
+        .sidebar-item:hover .sidebar-icon {
+            transform: scale(1.15);
+            color: var(--accent-green);
+        }
+
+        .sidebar-label {
+            opacity: 0;
+            margin-left: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-label {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        /* --- Main Layout Area --- */
+        .main-content {
+            flex: 1; 
+            margin-left: 70px;
+            display: flex; 
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        header {
+            background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-title-container { display: flex; align-items: center; gap: 12px; }
+        .header-title { font-weight: 800; font-size: 19px; color: var(--text-main); }
+        
+        .badge-faculty {
+            background: rgba(99, 102, 241, 0.18); color: #818cf8;
+            padding: 4px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 700;
+            border: 1px solid rgba(99, 102, 241, 0.3); text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 20px; font-size: 13.5px; color: var(--text-muted); }
+        
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; padding: 6px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-logout:hover { 
+            background: rgba(239, 68, 68, 0.25); 
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* --- Dashboard Container --- */
+        .dashboard-container { max-width: 920px; width: 100%; margin: 30px auto; padding: 0 20px; }
+
+        .page-header { margin-bottom: 28px; }
+        .page-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; color: var(--text-main); }
+        .page-header p { color: var(--text-muted); font-size: 14.5px; }
+
+        .settings-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 25px; margin-bottom: 24px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+
+        .settings-card h2 {
+            font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .settings-card p.card-desc { font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px; }
+
+        /* --- Persona Avatar & Profile Styling --- */
+        .persona-container {
+            display: flex; gap: 24px; align-items: center; padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-upload-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+
+        .persona-avatar {
+            width: 86px; height: 86px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-green), #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: #ffffff;
+            box-shadow: 0 4px 15px var(--accent-green-glow); flex-shrink: 0;
+            position: relative; overflow: hidden; cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        .persona-avatar img {
+            width: 100%; height: 100%; object-fit: cover; display: none;
+        }
+
+        .avatar-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s ease; color: #ffffff;
+            font-size: 11px; font-weight: 600; text-align: center; gap: 2px;
+        }
+
+        .persona-avatar:hover .avatar-overlay { opacity: 1; }
+
+        .btn-remove-photo {
+            background: transparent; border: none; color: #ef4444;
+            font-size: 12px; font-weight: 600; cursor: pointer; display: none;
+        }
+        .btn-remove-photo:hover { text-decoration: underline; }
+
+        .persona-details h3 { font-size: 20px; font-weight: 700; color: var(--text-main); }
+        .persona-role { font-size: 13.5px; color: var(--accent-green); font-weight: 600; margin-top: 2px; }
+        .persona-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .persona-tag {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+            color: var(--text-muted); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+        }
+
+        .setting-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid var(--border-subtle);
+        }
+        .setting-row:last-child { border-bottom: none; }
+
+        .setting-info { max-width: 70%; }
+        .setting-title { font-size: 14.5px; font-weight: 600; color: var(--text-alt); }
+        .setting-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Form Inputs & Selects */
+        .input-field {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 10px 14px; border-radius: 8px;
+            font-size: 14px; outline: none; width: 100%; max-width: 320px;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: var(--accent-green); }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative; display: inline-block; width: 48px; height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1); transition: .3s; border-radius: 34px;
+            border: 1px solid var(--border-color);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: #ffffff; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-green); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-save {
+            background: var(--accent-green); color: #000000; border: none;
+            padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 14.5px;
+            cursor: pointer; transition: all 0.2s ease; margin-top: 10px;
+        }
+        .btn-save:hover {
+            background: var(--accent-green-hover);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--accent-green-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Expandable Instructor Sidebar (Items matching teacher.html) -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="sidebar-brand-text">Lesson<span style="color: #10b981;">Notify</span></span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-item" href="teacher.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">My Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="/my_schedule.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <span class="sidebar-label">My Schedule</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="/my_students.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <span class="sidebar-label">My Students</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="/teacher_communication.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Send Notification</span>
+                </a>
+            </li>
+            <li style="margin-top: auto; padding-bottom: 20px;">
+                <a class="sidebar-item active" href="teacher_settings.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Profile Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <header>
+            <div class="header-title-container">
+                <span class="header-title">Instructor Portal</span>
+                <span class="badge-faculty">Faculty Level</span>
+            </div>
+            <div class="header-right">
+                <span id="teacherNameDisplay">Instructor</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="page-header">
+                <h1>Faculty Profile & System Settings</h1>
+                <p>Manage your instructor avatar, course default triggers, and faculty profile information.</p>
+            </div>
+
+            <!-- Instructor Persona & Profile Picture -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Faculty Profile & Avatar
+                </h2>
+                <p class="card-desc">Click the circle to upload a custom profile picture for your course rosters.</p>
+
+                <div class="persona-container">
+                    <div class="avatar-upload-wrapper">
+                        <!-- Clickable Avatar -->
+                        <div class="persona-avatar" id="avatarContainer" onclick="document.getElementById('avatarFileInput').click()">
+                            <img id="avatarImage" src="" alt="Faculty Photo">
+                            <span id="avatarInitials">DR</span>
+                            <div class="avatar-overlay">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                Upload
+                            </div>
+                        </div>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                        <button class="btn-remove-photo" id="btnRemovePhoto">Remove photo</button>
+                    </div>
+
+                    <div class="persona-details">
+                        <h3 id="personaDisplayName">Dr. Sarah Jenkins</h3>
+                        <div class="persona-role" id="personaDeptDisplay">Department of Computer Science</div>
+                        <div class="persona-tags">
+                            <span class="persona-tag">Lead Instructor</span>
+                            <span class="persona-tag">3 Modules Active</span>
+                            <span class="persona-tag">Lab Suite Supervisor</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Instructor Title & Name</div>
+                        <div class="setting-subtitle">Displayed on lecture schedules and automated student notifications</div>
+                    </div>
+                    <input type="text" class="input-field" id="inputTeacherName" value="Dr. Sarah Jenkins">
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Academic Faculty / Department</div>
+                        <div class="setting-subtitle">Your assigned department within the portal</div>
+                    </div>
+                    <input type="text" class="input-field" id="inputTeacherDept" value="Department of Computer Science">
+                </div>
+            </div>
+
+            <!-- Automated Trigger Preferences -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    Lecture Notification Triggers
+                </h2>
+                <p class="card-desc">Configure automated reminder dispatches sent to enrolled students.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Default Alert Lead Time</div>
+                        <div class="setting-subtitle">Time prior to class when automated SMS & push triggers fire</div>
+                    </div>
+                    <select class="input-field" id="selectLeadTime">
+                        <option value="10m prior" selected>10 Minutes Prior (Recommended)</option>
+                        <option value="15m prior">15 Minutes Prior</option>
+                        <option value="30m prior">30 Minutes Prior</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Automated SMS Reminders</div>
+                        <div class="setting-subtitle">Queue automated SMS reminders to students before every lecture</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleSms" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Appearance Theme -->
+            <div class="settings-card">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    Appearance Theme
+                </h2>
+                <p class="card-desc">Customize interface theme across instructor views.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-title">Light Mode</div>
+                        <div class="setting-subtitle">Toggle clean light interface scheme</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleTheme">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-save" id="btnSaveSettings">Save Faculty Settings</button>
+        </div>
+    </div>
+
+    <script>
+       // --- Theme Manager ---
+        const themeToggle = document.getElementById('toggleTheme');
+        const savedTheme = localStorage.getItem('lesson_notify_theme');
+
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('lesson_notify_theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('lesson_notify_theme', 'dark');
+            }
+        });
+
+        const avatarFileInput = document.getElementById('avatarFileInput');
+        const avatarImage = document.getElementById('avatarImage');
+        const avatarInitials = document.getElementById('avatarInitials');
+        const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+
+        function setAvatarDisplay(photoDataUrl) {
+            if (photoDataUrl) {
+                avatarImage.src = photoDataUrl;
+                avatarImage.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                btnRemovePhoto.style.display = 'inline-block';
+            } else {
+                avatarImage.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                btnRemovePhoto.style.display = 'none';
+            }
+        }
+
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 3 * 1024 * 1024) {
+                    alert('Please select an image smaller than 3MB.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const dataUrl = evt.target.result;
+                    localStorage.setItem('ln_teacher_avatar', dataUrl);
+                    setAvatarDisplay(dataUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        btnRemovePhoto.addEventListener('click', () => {
+            localStorage.removeItem('ln_teacher_avatar');
+            avatarFileInput.value = '';
+            setAvatarDisplay(null);
+        });
+
+        const teacherName = localStorage.getItem('ln_teacher_name') || 'Dr. Sarah Jenkins';
+        const teacherDept = localStorage.getItem('ln_teacher_dept') || 'Department of Computer Science';
+        const savedAvatar = localStorage.getItem('ln_teacher_avatar');
+
+        function updatePersonaDisplay(name, dept) {
+            document.getElementById('teacherNameDisplay').textContent = name;
+            document.getElementById('personaDisplayName').textContent = name;
+            document.getElementById('inputTeacherName').value = name;
+            
+            document.getElementById('personaDeptDisplay').textContent = dept;
+            document.getElementById('inputTeacherDept').value = dept;
+
+            const parts = name.trim().split(' ');
+            const initials = parts.length > 1 
+                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                : (parts[0][0] || 'D').toUpperCase();
+            avatarInitials.textContent = initials;
+        }
+
+        updatePersonaDisplay(teacherName, teacherDept);
+        setAvatarDisplay(savedAvatar);
+
+        document.getElementById('btnSaveSettings').addEventListener('click', () => {
+            const newName = document.getElementById('inputTeacherName').value.trim();
+            const newDept = document.getElementById('inputTeacherDept').value.trim();
+
+            if (newName) {
+                localStorage.setItem('ln_teacher_name', newName);
+                localStorage.setItem('ln_teacher_dept', newDept);
+
+                updatePersonaDisplay(newName, newDept);
+                alert('Faculty profile and alert settings saved!');
+            }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+    </script>
+</body>
+</html>

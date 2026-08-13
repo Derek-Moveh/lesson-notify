@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notify — Instructors</title>
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --bg-main: #030712;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --sidebar-bg: rgba(11, 15, 25, 0.95);
+            --header-bg: rgba(11, 15, 25, 0.85);
+            --card-bg: rgba(11, 15, 25, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.03);
+            --table-th-bg: rgba(255, 255, 255, 0.03);
+            --table-border-dark: #1f2937;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --sidebar-shadow: rgba(0, 0, 0, 0.5);
+            --input-bg: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-main: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-alt: #1e293b;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --table-th-bg: rgba(0, 0, 0, 0.03);
+            --table-border-dark: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --sidebar-shadow: rgba(0, 0, 0, 0.1);
+            --input-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); color: var(--text-main); 
+            min-height: 100vh; display: flex; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Hover Expandable Sidebar --- */
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 70px;
+            background: var(--sidebar-bg); backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color); overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            z-index: 200; display: flex; flex-direction: column; padding-top: 20px;
+        }
+        .sidebar:hover { width: 250px; box-shadow: 5px 0 25px var(--sidebar-shadow); }
+        .sidebar-menu { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 5px; }
+        .sidebar-item { display: flex; align-items: center; padding: 12px 20px; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: 0.2s; white-space: nowrap; border-radius: 0 20px 20px 0; margin-right: 10px; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(37, 99, 235, 0.1); color: #3b82f6; }
+        .sidebar-icon { min-width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; margin-right: 20px; }
+        .sidebar-label { font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+        .sidebar:hover .sidebar-label { opacity: 1; transition-delay: 0.1s; }
+        .sidebar-brand { display: flex; align-items: center; padding: 0 20px; margin-bottom: 20px; color: var(--text-main); white-space: nowrap; }
+        .sidebar-brand svg { min-width: 28px; margin-right: 18px; color: #10b981; }
+
+        /* --- Main Content Wrapper --- */
+        .main-wrapper { flex: 1; margin-left: 70px; display: flex; flex-direction: column; min-width: 0; }
+        
+        header { background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
+        .header-title { font-weight: 700; font-size: 18px; color: var(--text-alt); }
+        .user-meta { display: flex; align-items: center; gap: 15px; font-size: 13.5px; color: var(--text-muted); }
+        .btn-logout { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .dashboard-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 20px; flex: 1; }
+        
+        .welcome-banner { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(37, 99, 235, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            border-radius: 12px; padding: 30px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+        }
+        .welcome-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
+        .welcome-banner p { color: var(--text-muted); font-size: 14px; }
+
+        /* Buttons & Toolbar */
+        .btn-primary { background: #3b82f6; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { background: #2563eb; }
+        
+        .btn-subtle { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-alt); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-subtle:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-invite { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .btn-invite:hover { background: rgba(16, 185, 129, 0.2); }
+
+        .toolbar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        .toolbar-group { display: flex; gap: 10px; align-items: center; }
+        .form-control { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 14px; border-radius: 6px; font-size: 13.5px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #3b82f6; }
+
+        /* Card & Table */
+        .card-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: background 0.3s; margin-bottom: 30px; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .data-table th { background: var(--table-th-bg); color: var(--text-muted); font-weight: 600; padding: 15px 20px; border-bottom: 1px solid var(--table-border-dark); }
+        .data-table td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); color: var(--text-alt); vertical-align: middle; }
+        
+        /* Instructor Profile Cell */
+        .instructor-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #3b82f6; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; position: relative; }
+        .avatar.purple { background: #8b5cf6; }
+        .avatar.emerald { background: #10b981; }
+        .avatar.orange { background: #f59e0b; }
+        
+        /* Online/Offline Indicator */
+        .status-dot { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--card-bg); }
+        .status-dot.online { background-color: #10b981; }
+        .status-dot.offline { background-color: #64748b; }
+        
+        .instructor-details { display: flex; flex-direction: column; }
+        .instructor-name { font-weight: 600; color: var(--text-main); }
+        .instructor-role { font-size: 12px; color: var(--text-muted); }
+
+        /* Badges */
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
+        .badge.registered { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge.unregistered { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Admin Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="sidebar-label" style="font-size: 18px; font-weight: 900;">Lesson<span style="color: #10b981;">Notify</span></span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-item" href="admin.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="timetable.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <span class="sidebar-label">Timetables</span>
+                </a>
+            </li>
+            <li>
+                <!-- Instructors is Active -->
+                <a class="sidebar-item active" href="instructors.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Instructors</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="delivery_logs.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Delivery Logs</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="communication.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Send Notification</span>
+                </a>
+            </li>
+            <li style="margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                <a class="sidebar-item" href="settings.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">Instructor Directory</div>
+            <div class="user-meta">
+                <span id="adminNameDisplay">Workspace Admin</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="welcome-banner">
+                <div>
+                    <h1>Faculty Management</h1>
+                    <p>View instructor details, monitor online status, and invite faculty to create Lesson Notify accounts.</p>
+                </div>
+                <button class="btn-primary" onclick="alert('Opening Add Instructor form...')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Instructor
+                </button>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <select class="form-control">
+                        <option value="all">All Departments</option>
+                        <option value="cs">Computer Science</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="design">Arts & Design</option>
+                    </select>
+                    <select class="form-control">
+                        <option value="all">All Statuses</option>
+                        <option value="registered">Registered</option>
+                        <option value="unregistered">Needs Invite</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="text" class="form-control" placeholder="Search by name, email or phone..." style="width: 260px;">
+                </div>
+            </div>
+
+            <!-- Instructors Table -->
+            <div class="card-section" style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Instructor</th>
+                            <th>Contact Info</th>
+                            <th>Department</th>
+                            <th>App Account</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Registered / Online -->
+                        <tr>
+                            <td>
+                                <div class="instructor-profile">
+                                    <div class="avatar purple">
+                                        SK
+                                        <div class="status-dot online" title="Online Now"></div>
+                                    </div>
+                                    <div class="instructor-details">
+                                        <span class="instructor-name">Dr. Samuel K.</span>
+                                        <span class="instructor-role">Senior Lecturer</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px;">samuel.k@university.edu</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">+234 801 234 5678</div>
+                            </td>
+                            <td>Computer Science</td>
+                            <td><span class="badge registered">Registered</span></td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
+                                <button class="btn-subtle">Edit</button>
+                            </td>
+                        </tr>
+
+                        <!-- Unregistered / Offline -->
+                        <tr>
+                            <td>
+                                <div class="instructor-profile">
+                                    <div class="avatar orange">
+                                        SJ
+                                        <div class="status-dot offline" title="Offline"></div>
+                                    </div>
+                                    <div class="instructor-details">
+                                        <span class="instructor-name">Sarah Jenkins</span>
+                                        <span class="instructor-role">Adjunct Professor</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px;">s.jenkins@university.edu</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">+234 802 345 6789</div>
+                            </td>
+                            <td>Arts & Design</td>
+                            <td><span class="badge unregistered">No Account</span></td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button class="btn-subtle btn-invite" style="margin-right: 5px;" onclick="alert('Invitation link sent to s.jenkins@university.edu via Email and SMS.')">Send Invite</button>
+                                <button class="btn-subtle">Edit</button>
+                            </td>
+                        </tr>
+
+                        <!-- Registered / Offline -->
+                        <tr>
+                            <td>
+                                <div class="instructor-profile">
+                                    <div class="avatar emerald">
+                                        AO
+                                        <div class="status-dot offline" title="Offline"></div>
+                                    </div>
+                                    <div class="instructor-details">
+                                        <span class="instructor-name">Prof. Adaeze O.</span>
+                                        <span class="instructor-role">Department Head</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px;">adaeze.o@university.edu</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">+234 803 456 7890</div>
+                            </td>
+                            <td>Computer Science</td>
+                            <td><span class="badge registered">Registered</span></td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
+                                <button class="btn-subtle">Edit</button>
+                            </td>
+                        </tr>
+
+                        <!-- Registered / Online -->
+                        <tr>
+                            <td>
+                                <div class="instructor-profile">
+                                    <div class="avatar">
+                                        TM
+                                        <div class="status-dot online" title="Online Now"></div>
+                                    </div>
+                                    <div class="instructor-details">
+                                        <span class="instructor-name">Engr. Tobi M.</span>
+                                        <span class="instructor-role">Lecturer I</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px;">tobi.m@university.edu</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">+234 804 567 8901</div>
+                            </td>
+                            <td>Engineering</td>
+                            <td><span class="badge registered">Registered</span></td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
+                                <button class="btn-subtle">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Check for Light Mode
+        const savedTheme = localStorage.getItem('lesson_notify_theme'); 
+        if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
+
+        const adminName = localStorage.getItem('ln_user_name') || 'Workspace Admin';
+        document.getElementById('adminNameDisplay').textContent = adminName;
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+    </script>
+</body>
+</html>

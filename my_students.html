@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notify — My Students</title>
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --bg-main: #030712;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --header-bg: rgba(11, 15, 25, 0.85);
+            --card-bg: rgba(11, 15, 25, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.03);
+            --input-bg: rgba(255, 255, 255, 0.02);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --badge-bg: rgba(16, 185, 129, 0.1);
+            --badge-text: #10b981;
+            
+            /* Imported Sidebar Variables */
+            --bg-panel: #0b0f19;
+            --accent-green: #10b981;
+            --accent-green-bg: rgba(16, 185, 129, 0.12);
+            --accent-green-glow: rgba(16, 185, 129, 0.25);
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-main: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-alt: #1e293b;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --input-bg: #f8fafc;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --badge-bg: rgba(16, 185, 129, 0.1);
+            --badge-text: #059669;
+
+            /* Imported Light Mode Sidebar Variables */
+            --bg-panel: #ffffff;
+            --accent-green-bg: rgba(16, 185, 129, 0.12);
+            --accent-green-glow: rgba(16, 185, 129, 0.15);
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Live Hover Expandable Sidebar (From Settings) --- */
+        .sidebar {
+            width: 70px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            padding-top: 20px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 200;
+            overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .sidebar-brand {
+            display: flex; align-items: center; padding: 0 22px; margin-bottom: 30px;
+            color: var(--text-main); font-size: 18px; font-weight: 800;
+            white-space: nowrap; cursor: pointer;
+        }
+        .sidebar-brand svg { min-width: 24px; margin-right: 16px; color: var(--accent-green); }
+        
+        .sidebar-brand-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sidebar:hover .sidebar-brand-text {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        .sidebar-menu { 
+            list-style: none; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            padding: 0 12px; 
+            height: 100%;
+        }
+        
+        .sidebar-item {
+            display: flex; align-items: center; padding: 12px 14px;
+            color: var(--text-muted); text-decoration: none;
+            border-radius: 8px; font-size: 14.5px; font-weight: 500;
+            position: relative; white-space: nowrap;
+            transition: background 0.25s, color 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover {
+            background: var(--accent-green-bg);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px var(--accent-green-glow);
+        }
+
+        .sidebar-item.active { 
+            background: var(--accent-green-bg); 
+            color: var(--accent-green); 
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--accent-green);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .sidebar-icon { 
+            min-width: 20px;
+            height: 20px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: transform 0.2s ease; 
+        }
+
+        .sidebar-item:hover .sidebar-icon {
+            transform: scale(1.15);
+            color: var(--accent-green);
+        }
+
+        .sidebar-label {
+            opacity: 0;
+            margin-left: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-label {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        /* --- Main Content Wrapper --- */
+        .main-wrapper { flex: 1; margin-left: 70px; display: flex; flex-direction: column; min-width: 0; }
+        
+        header { background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
+        .header-title { font-weight: 700; font-size: 18px; color: var(--text-alt); }
+        .user-meta { display: flex; align-items: center; gap: 15px; font-size: 13.5px; color: var(--text-muted); }
+        .btn-logout { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .dashboard-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 20px; flex: 1; }
+        
+        .welcome-banner { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            border-radius: 12px; padding: 30px; margin-bottom: 30px;
+        }
+        .welcome-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
+        .welcome-banner p { color: var(--text-muted); font-size: 14px; }
+
+        /* Controls Bar (Search) */
+        .controls-bar {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap;
+        }
+        .search-box {
+            position: relative; flex: 1; min-width: 280px;
+        }
+        .search-box svg {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+        }
+        .search-input {
+            width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 11px 16px 11px 42px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        .search-input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+
+        .stats-pill {
+            background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 18px; border-radius: 8px;
+            font-size: 13.5px; color: var(--text-muted); font-weight: 600; box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        .stats-pill span { color: var(--text-main); }
+
+        /* Students Table Card */
+        .card-section {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 6px -1px var(--shadow-color); transition: background 0.3s; margin-bottom: 30px;
+        }
+        
+        .table-responsive { width: 100%; overflow-x: auto; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: rgba(0, 0, 0, 0.02); color: var(--text-muted); font-weight: 600; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
+        body.light-mode th { background: #f8fafc; }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); color: var(--text-main); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255, 255, 255, 0.01); }
+        body.light-mode tr:hover td { background: rgba(0, 0, 0, 0.01); }
+
+        .student-name { font-weight: 600; color: var(--text-alt); display: flex; align-items: center; gap: 10px; }
+        .student-avatar {
+            width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #3b82f6);
+            color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+        .student-id { font-size: 12px; color: var(--text-muted); font-family: monospace; }
+        
+        .track-badge {
+            display: inline-block; background: var(--badge-bg); color: var(--badge-text);
+            padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Expandable Instructor Sidebar (Items matching teacher.html) -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="sidebar-brand-text">Lesson<span style="color: #10b981;">Notify</span></span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-item" href="teacher.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">My Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="/my_schedule.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <span class="sidebar-label">My Schedule</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item active" href="/my_students.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <span class="sidebar-label">My Students</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="/teacher_communication.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Send Notification</span>
+                </a>
+            </li>
+            <li style="margin-top: auto; padding-bottom: 20px;">
+                <a class="sidebar-item" href="teacher_settings.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Profile Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">Enrolled Students</div>
+            <div class="user-meta">
+                <span id="teacherNameDisplay">Zeeno Moveh</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="welcome-banner">
+                <h1>Student Directory</h1>
+                <p>View all students enrolled across your active modules, classes, and academic tracks.</p>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="studentSearch" class="search-input" placeholder="Search student by name or ID...">
+                </div>
+                <div class="stats-pill">
+                    Total Enrolled: <span id="studentCount">6</span> students
+                </div>
+            </div>
+
+            <!-- Students Table Card -->
+            <div class="card-section">
+                <div class="table-responsive">
+                    <table id="studentTable">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Student ID</th>
+                                <th>Class / Track</th>
+                                <th>Enrolled Module</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <tr data-name="alexander wright" data-id="ST-4091">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">AW</div>
+                                        Alexander Wright
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4091</span></td>
+                                <td><span class="track-badge">Advanced Networks</span></td>
+                                <td>Advanced Network Architecture</td>
+                            </tr>
+                            <tr data-name="chiamaka obi" data-id="ST-4105">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">CO</div>
+                                        Chiamaka Obi
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4105</span></td>
+                                <td><span class="track-badge">Systems Design</span></td>
+                                <td>Systems Design Practicum</td>
+                            </tr>
+                            <tr data-name="liam smith" data-id="ST-4122">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">LS</div>
+                                        Liam Smith
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4122</span></td>
+                                <td><span class="track-badge">Data Structures</span></td>
+                                <td>Data Structures</td>
+                            </tr>
+                            <tr data-name="fatima al-hassan" data-id="ST-4138">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">FA</div>
+                                        Fatima Al-Hassan
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4138</span></td>
+                                <td><span class="track-badge">Advanced Networks</span></td>
+                                <td>Advanced Network Architecture</td>
+                            </tr>
+                            <tr data-name="mateo gonzalez" data-id="ST-4150">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">MG</div>
+                                        Mateo Gonzalez
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4150</span></td>
+                                <td><span class="track-badge">Systems Design</span></td>
+                                <td>Systems Design Practicum</td>
+                            </tr>
+                            <tr data-name="zara chen" data-id="ST-4189">
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">ZC</div>
+                                        Zara Chen
+                                    </div>
+                                </td>
+                                <td><span class="student-id">ST-4189</span></td>
+                                <td><span class="track-badge">Data Structures</span></td>
+                                <td>Data Structures</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="noResults" class="no-results">No students found matching your search query.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Check for Light Mode
+        const savedTheme = localStorage.getItem('lesson_notify_theme'); 
+        if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
+
+        const teacherName = localStorage.getItem('ln_user_name') || 'Zeeno Moveh';
+        document.getElementById('teacherNameDisplay').textContent = teacherName;
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+
+        // Live Search Filtering
+        const searchInput = document.getElementById('studentSearch');
+        const tableRows = document.querySelectorAll('#studentTableBody tr');
+        const noResultsEl = document.getElementById('noResults');
+        const studentCountEl = document.getElementById('studentCount');
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                const id = row.getAttribute('data-id').toLowerCase();
+
+                if (name.includes(query) || id.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            studentCountEl.textContent = visibleCount;
+            if (visibleCount === 0) {
+                noResultsEl.style.display = 'block';
+            } else {
+                noResultsEl.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

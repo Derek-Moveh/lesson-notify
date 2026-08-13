@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notify — Communication Settings</title>
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --bg-main: #030712;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --sidebar-bg: rgba(11, 15, 25, 0.95);
+            --header-bg: rgba(11, 15, 25, 0.85);
+            --card-bg: rgba(11, 15, 25, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.03);
+            --input-bg: rgba(255, 255, 255, 0.02);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --sidebar-shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-main: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-alt: #1e293b;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --input-bg: #f8fafc;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --sidebar-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Hover Expandable Sidebar --- */
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 70px;
+            background: var(--sidebar-bg); backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color); overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            z-index: 200; display: flex; flex-direction: column; padding-top: 20px;
+        }
+        .sidebar:hover { width: 250px; box-shadow: 5px 0 25px var(--sidebar-shadow); }
+        .sidebar-menu { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 5px; }
+        .sidebar-item { display: flex; align-items: center; padding: 12px 20px; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: 0.2s; white-space: nowrap; border-radius: 0 20px 20px 0; margin-right: 10px; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(37, 99, 235, 0.1); color: #3b82f6; }
+        .sidebar-icon { min-width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; margin-right: 20px; }
+        .sidebar-label { font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+        .sidebar:hover .sidebar-label { opacity: 1; transition-delay: 0.1s; }
+        .sidebar-brand { display: flex; align-items: center; padding: 0 20px; margin-bottom: 20px; color: var(--text-main); white-space: nowrap; }
+        .sidebar-brand svg { min-width: 28px; margin-right: 18px; color: #10b981; }
+
+        /* --- Main Content Wrapper --- */
+        .main-wrapper { flex: 1; margin-left: 70px; display: flex; flex-direction: column; min-width: 0; }
+        
+        header { background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
+        .header-title { font-weight: 700; font-size: 18px; color: var(--text-alt); }
+        .user-meta { display: flex; align-items: center; gap: 15px; font-size: 13.5px; color: var(--text-muted); }
+        .btn-logout { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .dashboard-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 20px; flex: 1; }
+        
+        .welcome-banner { 
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(37, 99, 235, 0.2); 
+            border-radius: 12px; padding: 30px; margin-bottom: 30px;
+        }
+        .welcome-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
+        .welcome-banner p { color: var(--text-muted); font-size: 14px; }
+
+        /* Two Column Grid */
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        .card-section {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px;
+            transition: background 0.3s; margin-bottom: 30px;
+        }
+        .section-header { margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .section-title { font-size: 18px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .section-desc { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+
+        /* Forms & Inputs */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        .form-control { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 14px; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        
+        /* Force Dropdown Options to Have Black Text */
+        select.form-control option {
+            color: #000000;
+            background-color: #ffffff;
+            padding: 8px;
+        }
+
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        /* Buttons */
+        .btn-primary { background: #3b82f6; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; width: 100%; display: inline-block; text-align: center; }
+        .btn-primary:hover { background: #2563eb; }
+
+        /* Toggle Switches */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-subtle); }
+        .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .toggle-info strong { display: block; font-size: 14px; color: var(--text-main); }
+        .toggle-info span { font-size: 12px; color: var(--text-muted); }
+        
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.1); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: #94a3b8; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #10b981; }
+        body.light-mode .slider { background-color: #e2e8f0; border-color: #cbd5e1; }
+        body.light-mode .slider:before { background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        body.light-mode input:checked + .slider { background-color: #10b981; border-color: #10b981; }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="sidebar-label" style="font-size: 18px; font-weight: 900;">Lesson<span style="color: #10b981;">Notify</span></span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-item" href="admin.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="timetable.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <span class="sidebar-label">Timetables</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="instructors.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Instructors</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="delivery_logs.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Delivery Logs</span>
+                </a>
+            </li>
+            <li>
+                <!-- Communication is Active -->
+                <a class="sidebar-item active" href="communication.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Send Notification</span>
+                </a>
+            </li>
+            <li style="margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+                <a class="sidebar-item" href="settings.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </div>
+                    <span class="sidebar-label">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">Communication Settings</div>
+            <div class="user-meta">
+                <span id="adminNameDisplay">Workspace Admin</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="welcome-banner">
+                <h1>Communication Center</h1>
+                <p>Manage automation rules, edit SMS/Email templates, and send manual broadcasts to faculty.</p>
+            </div>
+
+            <div class="grid-layout">
+                
+                <!-- Left Column -->
+                <div>
+                    <!-- Manual Broadcast Card -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+                                Send Quick Broadcast
+                            </h3>
+                            <div class="section-desc">Instantly message all or specific instructors.</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Recipient(s)</label>
+                            <select class="form-control">
+                                <option>All Instructors (Broadcast)</option>
+                                <option>Instructors with classes today</option>
+                                <option>Dr. Samuel K.</option>
+                                <option>Sarah Jenkins</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Delivery Method</label>
+                            <select class="form-control">
+                                <option>SMS & Email</option>
+                                <option>SMS Only</option>
+                                <option>Email Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Message Content</label>
+                            <textarea class="form-control" placeholder="Type your announcement here..."></textarea>
+                        </div>
+                        <button class="btn-primary" onclick="alert('Message sent successfully!')">Send Broadcast</button>
+                    </div>
+
+                    <!-- Automation Toggles Card -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Automation Rules
+                            </h3>
+                            <div class="section-desc">Control when the system automatically sends alerts.</div>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <strong>10-Minute Warning Alerts</strong>
+                                <span>Sends an SMS 10 minutes before a class begins.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <strong>Daily Schedule Digest</strong>
+                                <span>Sends an Email summary every morning at 7:00 AM.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <strong>Venue Change Notifications</strong>
+                                <span>Triggers instantly when a class location is updated.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Message Templates Card -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                Default Message Templates
+                            </h3>
+                            <div class="section-desc">Customize the automated text variables. Available tags: <code style="background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px;">{Instructor}</code> <code style="background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px;">{Class}</code> <code style="background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px;">{Venue}</code></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">10-Minute Warning (SMS)</label>
+                            <textarea class="form-control" style="min-height: 80px;">Reminder: Hello {Instructor}, your class {Class} begins in 10 minutes at {Venue}.</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Venue Change (SMS/Email)</label>
+                            <textarea class="form-control" style="min-height: 80px;">Update: The venue for {Class} has been changed to {Venue}. Please take note.</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Daily Digest Intro (Email)</label>
+                            <textarea class="form-control" style="min-height: 80px;">Good morning {Instructor}, here is your schedule for today. You have a total of {Count} classes.</textarea>
+                        </div>
+
+                        <button class="btn-primary" style="background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid var(--border-color);">Save Template Changes</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check for Light Mode
+        const savedTheme = localStorage.getItem('lesson_notify_theme'); 
+        if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
+
+        const adminName = localStorage.getItem('ln_user_name') || 'Workspace Admin';
+        document.getElementById('adminNameDisplay').textContent = adminName;
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+    </script>
+</body>
+</html>

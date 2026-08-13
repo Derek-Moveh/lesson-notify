@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>Welcome to Lesson Notify — Timetable Automation Suite</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; }
+        
+        body { 
+            background-color: #030712; 
+            color: #f8fafc; 
+            min-height: 100vh; 
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* LIGHT MODE OVERRIDES & THEME ENGINE */
+        body.light-theme {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        body.light-theme .tech-background {
+            background-color: #f8fafc;
+        }
+
+        body.light-theme .tech-background::before {
+            background-image: 
+                linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+        }
+
+        body.light-theme .orb-1 { background: rgba(37, 99, 235, 0.15); }
+        body.light-theme .orb-2 { background: rgba(16, 185, 129, 0.12); }
+        body.light-theme .orb-3 { background: rgba(139, 92, 246, 0.1); }
+
+        body.light-theme .scanlines {
+            background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 3px, rgba(0, 0, 0, 0.03) 4px);
+        }
+
+        body.light-theme .hero-title { color: #0f172a; }
+        body.light-theme .hero-desc { color: #475569; }
+
+        body.light-theme .gateway-4d-logo {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.95));
+            border-color: rgba(59, 130, 246, 0.25);
+            box-shadow: 0 12px 35px -5px rgba(37, 99, 235, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        body.light-theme .gateway-4d-logo span { color: #0f172a !important; }
+
+        body.light-theme .live-section,
+        body.light-theme footer {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-color: rgba(226, 232, 240, 0.9) !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04) !important;
+        }
+
+        body.light-theme h3, body.light-theme h4, body.light-theme h5 { color: #0f172a !important; }
+        body.light-theme p, body.light-theme li a { color: #475569 !important; }
+
+        body.light-theme .live-section.live-active {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.15), 0 20px 40px rgba(0,0,0,0.08) !important;
+            background: rgba(255, 255, 255, 0.98) !important;
+        }
+
+        body.light-theme div[style*="background: rgba(17, 24, 39"] {
+            background: rgba(248, 250, 252, 0.9) !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        body.light-theme .ticker-wrapper {
+            background: rgba(241, 245, 249, 0.9) !important;
+            border-color: #e2e8f0 !important;
+        }
+        body.light-theme .ticker-item { color: #475569 !important; }
+
+        /* HIGH-END TECH LIVE BACKGROUND ENGINE */
+        .tech-background {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            background-color: #030712;
+            overflow: hidden;
+        }
+
+        .tech-background::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center center;
+            animation: gridScroll 15s linear infinite;
+            mask-image: radial-gradient(circle at center, black 15%, transparent 60%);
+            -webkit-mask-image: radial-gradient(circle at center, black 15%, transparent 60%);
+        }
+        @keyframes gridScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        .orb-1, .orb-2, .orb-3 {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: floatOrb 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(37, 99, 235, 0.45); }
+        .orb-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: rgba(16, 185, 129, 0.35); animation-delay: -7s; animation-direction: alternate-reverse; }
+        .orb-3 { top: 30%; left: 40%; width: 40vw; height: 40vw; background: rgba(139, 92, 246, 0.3); animation-delay: -14s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(10%, 15%) scale(1.1); }
+            100% { transform: translate(-10%, 5%) scale(0.9); }
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0, 0, 0, 0.15) 3px, rgba(0, 0, 0, 0.15) 4px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* HOVER-TO-LIVE INTERACTIVE SECTION ENGINE */
+        .live-section {
+            background: rgba(11, 15, 25, 0.55);
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: translateY(0);
+        }
+
+        .live-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            transition: left 0.7s ease;
+        }
+
+        .live-section.live-active {
+            border-color: rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.22), 0 25px 50px rgba(0,0,0,0.6);
+            transform: translateY(-4px);
+            background: rgba(13, 19, 33, 0.85);
+        }
+
+        .live-section.live-active::before {
+            left: 100%;
+        }
+
+        .section-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 15px;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .live-section.live-active .section-live-badge {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .section-one-hero {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .hero-grid { 
+            display: grid; 
+            grid-template-columns: 1.25fr 1fr; 
+            gap: 60px; 
+            align-items: center; 
+            text-align: left; 
+            width: 100%;
+        }
+        .hero-tag { display: inline-block; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 25px; letter-spacing: 0.5px; }
+        .hero-title { font-size: 48px; font-weight: 800; line-height: 1.15; color: #ffffff; margin-bottom: 20px; }
+        .hero-title span { color: #10b981; }
+        .hero-desc { color: #94a3b8; font-size: 17px; line-height: 1.6; margin-bottom: 40px; max-width: 540px; }
+        
+        .action-button-grid { display: flex; gap: 20px; }
+        .btn-primary { 
+            background: linear-gradient(-45deg, #10b981, #2563eb, #059669, #1d4ed8); background-size: 300% 300%; animation: liveButton 4s ease infinite;
+            color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25); transition: all 0.3s ease; 
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37, 99, 235, 0.4); }
+        .btn-secondary { background-color: transparent; color: inherit; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 700; border: 2px solid #2563eb; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease; }
+        .btn-secondary:hover { background-color: rgba(37, 99, 235, 0.05); transform: translateY(-2px); }
+        @keyframes liveButton { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .preview-wrapper { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            gap: 30px;
+            width: 100%; 
+            max-width: 480px; 
+            margin-left: auto; 
+            perspective: 1000px;
+        }
+        .live-status { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #10b981; letter-spacing: 1px; }
+
+        @keyframes rotate3D4DSolid {
+            0% { 
+                transform: perspective(1000px) rotateY(0deg); 
+                box-shadow: 0 12px 35px -5px rgba(16, 185, 129, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.2); 
+            }
+            50% { 
+                transform: perspective(1000px) rotateY(180deg); 
+                box-shadow: 0 12px 35px -5px rgba(37, 99, 235, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.2); 
+            }
+            100% { 
+                transform: perspective(1000px) rotateY(360deg); 
+                box-shadow: 0 12px 35px -5px rgba(16, 185, 129, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.2); 
+            }
+        }
+
+        .gateway-4d-logo {
+            animation: rotate3D4DSolid 8s linear infinite;
+            transform-style: preserve-3d;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.85), rgba(11, 15, 25, 0.95));
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .gateway-4d-logo svg, 
+        .gateway-4d-logo .brand-text-inline {
+            transform: translateZ(15px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .performance-title { font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 15px; }
+        .performance-desc { color: #94a3b8; font-size: 16px; line-height: 1.6; margin-bottom: 30px; max-width: 800px; }
+        
+        .ticker-wrapper { background: rgba(6, 8, 15, 0.7); border: 1px solid rgba(31, 41, 55, 0.8); border-radius: 8px; padding: 16px 0; overflow: hidden; display: flex; width: 100%; }
+        .ticker-track { display: flex; width: max-content; animation: continuousScroll 25s linear infinite; }
+        .ticker-item { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; padding: 0 35px; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+        .ticker-item span.highlight { color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); }
+        
+        @keyframes continuousScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @media(max-width: 900px) { .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; } .preview-wrapper { margin: 0 auto; } .action-button-grid { justify-content: center; } }
+    </style>
+</head>
+<body>
+
+    <!-- TECH BACKGROUND ELEMENTS -->
+    <div class="tech-background">
+        <div class="orb-1"></div>
+        <div class="orb-2"></div>
+        <div class="orb-3"></div>
+    </div>
+    <div class="scanlines"></div>
+
+    <!-- SECTION 1: HERO CONTAINER ROW BLOCK -->
+    <div class="section-one-hero">
+        <section class="hero-grid">
+            <div class="hero-text-side">
+                <div class="hero-tag">NIGERIA MULTI-TENANT DEPLOYMENT</div>
+                <h1 class="hero-title">Timetable Alerts.<br>Every Period <span>Guaranteed</span>.</h1>
+                <p class="hero-desc">Prevent classroom delays, missing lecture logs, and venue communication gaps. Automate instant SMS, WhatsApp, and dashboard triggers directly to instructors across your entire learning facility.</p>
+                <div class="action-button-grid">
+                    <a href="/login?mode=signup" class="btn-primary">
+                        <span>Get started</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                    <a href="/login?mode=signin" class="btn-secondary">Faculty Log In</a>
+                </div>
+            </div>
+            <div class="preview-showcase-side">
+                <div class="preview-wrapper">
+                    <div class="gateway-4d-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="55" height="55" style="overflow: visible; flex-shrink: 0;">
+                            <rect x="15" y="15" width="70" height="70" rx="8" fill="none" stroke="#1e40af" stroke-width="3" />
+                            <rect x="32" y="32" width="36" height="36" rx="4" fill="none" stroke="#10b981" stroke-width="3" />
+                            <line x1="15" y1="15" x2="32" y2="32" stroke="#3b82f6" stroke-width="2" />
+                            <line x1="85" y1="15" x2="68" y2="32" stroke="#3b82f6" stroke-width="2" />
+                            <line x1="15" y1="85" x2="32" y2="68" stroke="#3b82f6" stroke-width="2" />
+                            <line x1="85" y1="85" x2="68" y2="68" stroke="#3b82f6" stroke-width="2" />
+                            <circle cx="50" cy="50" r="6" fill="#10b981" />
+                        </svg>
+                        <div class="brand-text-inline" style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                            <span style="font-family: sans-serif; font-size: 28px; font-weight: 900; color: inherit; line-height: 1;">Lesson</span>
+                            <span style="font-family: sans-serif; font-size: 28px; font-weight: 900; color: #10b981; line-height: 1;">Notify</span>
+                        </div>
+                    </div>
+
+                    <div class="live-status">
+                        <span style="color: #10b981; font-size: 16px; animation: pulse 2s infinite;">●</span> GATEWAY LIVE
+                    </div>        
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SECTION 2: SIMULTANEOUS BROADCASTS ENGINE (HOVER TO LIVE) -->
+    <section class="live-section" style="width: 100%; max-width: 1200px; margin-bottom: 60px; text-align: left;">
+        <div class="section-live-badge"><span style="color: #10b981;">●</span> LESSON NOTIFY// CORE SERVICE CAPABILITY</div>
+        <h3 class="performance-title">High-Capacity Simultaneous Alerts Engine</h3>
+        <p class="performance-desc">Lesson Notify processes timetable loops using non-blocking, multi-channel concurrency routers [local]. When an automated checkpoint fires, your server targets multiple faculty instructors and student notification lines simultaneously—ensuring instant delivery across the entire institution without delay.</p>
+        
+        <div class="ticker-wrapper">
+            <div class="ticker-track">
+                <div class="ticker-item">🚀 <span class="highlight">SIMULTANEOUS BROADCASTS ACTIVE</span></div>
+                <div class="ticker-item">⚡ Firing concurrent alerts to multiple instructor phones and student groups instantly</div>
+                <div class="ticker-item">📢 Non-blocking asynchronous network matrix routing active</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: PLATFORM ADVANTAGES (HOVER TO LIVE) -->
+    <section class="live-section" style="width: 100%; max-width: 1200px; margin: 0 auto 120px auto; text-align: left; display: block; clear: both;">
+        <div class="section-live-badge"><span style="color: #10b981;">●</span> LESSON NOTIFY// PLATFORM ADVANTAGES</div>
+        <h3 style="font-size: 26px; font-weight: 800; color: inherit; margin-bottom: 35px; letter-spacing: -0.5px;">Why Institutional Leaders Choose Lesson Notify</h3>
+        
+        <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid #1f2937; border-radius: 10px; padding: 25px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 20px; transition: border 0.3s;" onmouseenter="this.style.borderColor='#10b981'" onmouseleave="this.style.borderColor='#1f2937'">
+            <div style="font-size: 28px; background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; line-height: 1;">📉</div>
+            <div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">Zero Classroom Delay Leakage</h4>
+                <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.5;">Eliminate empty lecture theatres and venue tracking confusion [local]. Automated triggers notify faculty lines exactly 10 minutes before an operational shift opens, keeping timetables running on absolute time anchors.</p>
+            </div>
+        </div>
+
+        <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid #1f2937; border-radius: 10px; padding: 25px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 20px; transition: border 0.3s;" onmouseenter="this.style.borderColor='#2563eb'" onmouseleave="this.style.borderColor='#1f2937'">
+            <div style="font-size: 28px; background: rgba(37, 99, 235, 0.1); padding: 12px; border-radius: 8px; line-height: 1;">🛡️</div>
+            <div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">100% Network Delivery Routing Assurance</h4>
+                <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.5;">Equipped with high-priority carrier endpoints and smart DND (Do Not Disturb) bypass fallback relays. Your system bypasses strict consumer barriers to land emergency announcements right inside user handsets instantly.</p>
+            </div>
+        </div>
+
+        <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid #1f2937; border-radius: 10px; padding: 25px; display: flex; align-items: flex-start; gap: 20px; transition: border 0.3s;" onmouseenter="this.style.borderColor='#60a5fa'" onmouseleave="this.style.borderColor='#1f2937'">
+            <div style="font-size: 28px; background: rgba(96, 165, 250, 0.1); padding: 12px; border-radius: 8px; line-height: 1;">📊</div>
+            <div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">Decoupled Management Transparency</h4>
+                <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.5;">Empower administrative staff and institution founders with specialized control desks. Monitor delivery logs concurrently, view live platform activity streams, and adjust timetable rosters through a protected workspace layer.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: WORKSPACE ONBOARDING (HOVER TO LIVE) -->
+    <section class="live-section" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(11, 15, 25, 0.8)); padding: 60px 45px; margin: 0 auto 120px auto; text-align: center; width: 100%; max-width: 1200px; display: block; clear: both;">
+        <div class="section-live-badge"><span style="color: #10b981;">●</span> LESSON NOTIFY// WORKSPACE ONBOARDING</div>
+        
+        <h3 style="font-size: 32px; font-weight: 800; color: inherit; margin-bottom: 15px; letter-spacing: -0.5px;">Ready to Eliminate Classroom Delays?</h3>
+        <p style="color: #94a3b8; font-size: 16px; line-height: 1.6; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            Join modern academies and high-scale learning centers leveraging automated network dispatches. Set up your multi-tenant facility configuration parameters, onboard instructors, and deploy concurrent schedule alerts in under 5 minutes.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; max-width: 950px; margin: 0 auto 45px auto; text-align: left;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                <div style="font-size: 20px; margin-bottom: 8px;">⚡</div>
+                <h4 style="font-size: 15px; font-weight: 700; color: inherit; margin-bottom: 5px;">Instant Activation</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Zero long technical hardware setups. Upload your spreadsheet or map periods instantly from any browser desk.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                <div style="font-size: 20px; margin-bottom: 8px;">📲</div>
+                <h4 style="font-size: 15px; font-weight: 700; color: inherit; margin-bottom: 5px;">Direct Handset Pings</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Bridge communication links effortlessly. Faculty lines receive clear alerts right inside mobile pockets directly on time.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                <div style="font-size: 20px; margin-bottom: 8px;">📉</div>
+                <h4 style="font-size: 15px; font-weight: 700; color: inherit; margin-bottom: 5px;">Protect Operational ROI</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Eradicate missing log hours and unutilized hall capacity leaks to maximize institutional resource values.</p>
+            </div>
+        </div>
+
+        <a href="/login?mode=signup" class="btn-primary" style="padding: 18px 45px; font-size: 17px; text-decoration: none; border-radius: 8px;">
+            <span>Get Started Now</span>
+            <svg width="18" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 5px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+    </section>
+    
+    <!-- SECTION 5: PILOT WORKSPACES (HOVER TO LIVE) -->
+    <section class="live-section" style="width: 100%; max-width: 1200px; margin: 0 auto 120px auto; text-align: left; display: block; clear: both;">
+        <div class="section-live-badge"><span style="color: #10b981;">●</span> LESSON NOTIFY// INSTANT WORKSPACE INTEGRATION</div>
+        
+        <h3 style="font-size: 26px; font-weight: 800; color: inherit; margin-bottom: 15px; letter-spacing: -0.5px;">Supported Pilot Workspaces & Centers</h3>
+        <p style="color: #64748b; font-size: 15px; margin-bottom: 35px; max-width: 700px;">Our open-source scraper matrices instantly map out campus venues, training rooms, and specialized lab coordinates across top environments [local].</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%;">
+            
+            <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(30, 41, 59, 0.8); border-radius: 10px; padding: 25px; transition: all 0.3s;" onmouseenter="this.style.borderColor='#10b981'; this.style.transform='translateY(-2px)';" onmouseleave="this.style.borderColor='rgba(30, 41, 59, 0.8)'; this.style.transform='none';">
+                <div style="font-size: 10px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Ecosystem Pilot Hub</div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">Tech Innovation Hub</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Active deployment node. Mapped for training labs, developer cohorts, and automated workspace alerts [local].</p>
+            </div>
+
+            <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(30, 41, 59, 0.8); border-radius: 10px; padding: 25px; transition: all 0.3s;" onmouseenter="this.style.borderColor='#10b981'; this.style.transform='translateY(-2px)';" onmouseleave="this.style.borderColor='rgba(30, 41, 59, 0.8)'; this.style.transform='none';">
+                <div style="font-size: 10px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Private Academy Node</div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">Apex Executive Academy</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Pre-configured structure parameters. Tailored for weekday corporate sessions and weekend tutorial tracks.</p>
+            </div>
+
+            <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(30, 41, 59, 0.8); border-radius: 10px; padding: 25px; transition: all 0.3s;" onmouseenter="this.style.borderColor='#10b981'; this.style.transform='translateY(-2px)';" onmouseleave="this.style.borderColor='rgba(30, 41, 59, 0.8)'; this.style.transform='none';">
+                <div style="font-size: 10px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Digital School Node</div>
+                <h4 style="font-size: 17px; font-weight: 700; color: inherit; margin-bottom: 6px;">Matrix Digital School</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">Optimized timeline sync. Built for rotating high-intensity skill cohorts and dynamic short-term course tracks.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER WITH THEME SWITCHER -->
+    <footer style="background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30, 41, 59, 0.8); border-radius: 16px 16px 0 0; padding: 60px 40px 40px 40px; margin-top: 40px; text-align: left; width: 100%; max-width: 1200px; clear: both; position: relative; box-shadow: 0 -20px 40px rgba(0,0,0,0.3);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px;">
+            
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <span style="font-family: sans-serif; font-size: 20px; font-weight: 900; color: inherit;">Lesson</span>
+                    <span style="font-family: sans-serif; font-size: 20px; font-weight: 900; color: #10b981;">Notify</span>
+                </div>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.5;">High-scale multi-tenant notification dispatch matrix for modern academies, tech hubs, and multi-facility learning institutions [local].</p>
+            </div>
+
+            <div>
+                <h5 style="font-size: 12px; font-weight: 700; color: inherit; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Platform Hubs</h5>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                    <li><a href="/login?mode=signin" style="color: #94a3b8; text-decoration: none; font-size: 13.5px; transition: color 0.2s;" onmouseenter="this.style.color='#10b981'" onmouseleave="this.style.color='#94a3b8'">School Administrative Gate</a></li>
+                    <li><a href="/login?mode=signin" style="color: #94a3b8; text-decoration: none; font-size: 13.5px; transition: color 0.2s;" onmouseenter="this.style.color='#10b981'" onmouseleave="this.style.color='#94a3b8'">Faculty Instructor Portal</a></li>
+                    <li><a href="/admin-dashboard" style="color: #94a3b8; text-decoration: none; font-size: 13.5px; transition: color 0.2s;" onmouseenter="this.style.color='#10b981'" onmouseleave="this.style.color='#94a3b8'">Control Console Workspace</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 style="font-size: 12px; font-weight: 700; color: inherit; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Network Status</h5>
+                <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(31, 41, 55, 0.8); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: inherit; font-weight: 600;">
+                        <span style="color: #10b981; animation: pulse 2s infinite;">●</span> System Operations: Nominal
+                    </div>
+                    <p style="font-size: 11px; color: #64748b; margin-top: 5px; font-family: monospace;">API Uptime: 99.98% Core Active</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="border-top: 1px solid rgba(30, 41, 59, 0.8); padding-top: 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <p style="font-size: 13px; color: #64748b;">&copy; 2026 Lesson Notify Inc. All Rights Reserved.</p>
+                <p style="font-size: 11px; color: #475569; margin-top: 4px;">Automating multi-tenant communication links concurrently [local].</p>
+            </div>
+            
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <button id="themeToggleBtn" style="background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #3b82f6; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseenter="this.style.background='rgba(37, 99, 235, 0.2)'" onmouseleave="this.style.background='rgba(37, 99, 235, 0.1)'">
+                    <span id="themeIcon">☀️</span> <span id="themeText">Light Mode</span>
+                </button>
+
+                <div style="display: flex; gap: 15px; align-items: center; background: rgba(255,255,255,0.01); padding: 6px 14px; border: 1px solid rgba(255,255,255,0.03); border-radius: 6px;">
+                    <span style="font-size: 10px; font-weight: 700; color: #475569; letter-spacing: 0.5px; text-transform: uppercase;">Compliance:</span>
+                    <span style="font-size: 11px; font-weight: bold; color: inherit; font-family: sans-serif;" title="Nigerian Data Protection Regulation Compliance Layer">NDPR</span>
+                    <span style="color: #1e293b; font-size: 10px;">|</span>
+                    <span style="font-size: 11px; font-weight: bold; color: inherit; font-family: sans-serif;" title="NITDA System Interoperability Standard">NITDA Approved</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const liveSections = document.querySelectorAll('.live-section');
+        liveSections.forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                section.classList.add('live-active');
+            });
+            section.addEventListener('mouseleave', () => {
+                section.classList.remove('live-active');
+            });
+        });
+
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const bodyElement = document.body;
+
+        const currentTheme = localStorage.getItem('lesson_notify_theme');
+        if (currentTheme === 'light') {
+            bodyElement.classList.add('light-theme');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Dark Mode';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            bodyElement.classList.toggle('light-theme');
+            if (bodyElement.classList.contains('light-theme')) {
+                localStorage.setItem('lesson_notify_theme', 'light');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                localStorage.setItem('lesson_notify_theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            }
+        });
+
+        let heroDeferredPrompt = null;
+        const heroInstallBtn = document.getElementById('pwa-hero-install-btn');
+
+        if (heroInstallBtn) {
+            heroInstallBtn.addEventListener('click', async () => {
+                if (heroDeferredPrompt) {
+                    heroDeferredPrompt.prompt();
+                    const choiceResult = await heroDeferredPrompt.userChoice;
+                    if (choiceResult.outcome === 'accepted') {
+                        heroInstallBtn.style.display = 'none';
+                    }
+                    heroDeferredPrompt = null;
+                } else {
+                    alert('💡 To Install Lesson Notify App:\n\n' +
+                          'Look up at the top-right corner of your browser window address bar and click the [ 🖥️ Open in App ] button next to the star bookmark icon!');
+                }
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            heroDeferredPrompt = e;
+            if (heroInstallBtn) {
+                heroInstallBtn.style.color = '#3b82f6';
+                heroInstallBtn.style.borderColor = '#3b82f6';
+            }
+        });
+    </script>
+</body>
+</html>

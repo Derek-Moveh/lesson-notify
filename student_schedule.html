@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Notify — Full Schedule</title>
+    <style>
+        /* --- CSS Variables for Student Dark Theme (Default) --- */
+        :root, :root[data-theme="dark"] {
+            --bg-main: #050810;
+            --bg-panel: #0b0f19;
+            --card-bg: #111624;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-alt: #e2e8f0;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --accent-purple: #8b5cf6;
+            --accent-purple-hover: #9333ea;
+            --accent-purple-bg: rgba(139, 92, 246, 0.12);
+            --accent-purple-glow: rgba(139, 92, 246, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            
+            /* Status Colors */
+            --status-live-bg: rgba(16, 185, 129, 0.12);
+            --status-live-text: #10b981;
+            --status-upcoming-bg: rgba(59, 130, 246, 0.12);
+            --status-upcoming-text: #3b82f6;
+            --status-completed-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- CSS Variables for Student Light Theme --- */
+        :root[data-theme="light"], body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-panel: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-alt: #334155;
+            --border-color: #e2e8f0;
+            --border-subtle: #f1f5f9;
+            --accent-purple: #7c3aed;
+            --accent-purple-hover: #6d28d9;
+            --accent-purple-bg: rgba(124, 58, 237, 0.08);
+            --accent-purple-glow: rgba(124, 58, 237, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.06);
+            
+            /* Status Colors */
+            --status-live-bg: #d1fae5;
+            --status-live-text: #059669;
+            --status-upcoming-bg: #dbeafe;
+            --status-upcoming-text: #2563eb;
+            --status-completed-bg: #f1f5f9;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- Hover Expandable Sidebar --- */
+        .sidebar {
+            width: 70px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 200;
+            overflow-x: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.3s, border-color 0.3s;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+            box-shadow: 8px 0 30px var(--shadow-color);
+        }
+        
+        .sidebar-brand {
+            display: flex; align-items: center; padding: 0 23px; margin-bottom: 30px;
+            color: var(--text-main); font-size: 18px; font-weight: 800;
+            white-space: nowrap; cursor: pointer;
+        }
+        .sidebar-brand svg { min-width: 24px; margin-right: 16px; color: #10b981; }
+        
+        .sidebar-brand-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sidebar:hover .sidebar-brand-text {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
+        
+        .sidebar-item {
+            display: flex; align-items: center; padding: 12px 14px;
+            color: var(--text-muted); text-decoration: none;
+            border-radius: 8px; font-size: 14.5px; font-weight: 500;
+            position: relative; white-space: nowrap;
+            transition: background 0.25s, color 0.25s, transform 0.25s;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover {
+            background: var(--accent-purple-bg);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px var(--accent-purple-glow);
+        }
+
+        .sidebar-item.active { 
+            background: var(--accent-purple-bg); 
+            color: var(--accent-purple); 
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--accent-purple);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--accent-purple);
+        }
+
+        .sidebar-icon { 
+            min-width: 20px;
+            height: 20px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: transform 0.2s ease; 
+        }
+
+        .sidebar-item:hover .sidebar-icon {
+            transform: scale(1.15);
+            color: var(--accent-purple);
+        }
+
+        .sidebar-label {
+            opacity: 0;
+            margin-left: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-label {
+            opacity: 1;
+            transition-delay: 0.05s;
+        }
+
+        /* --- Theme Toggle Button --- */
+        .theme-toggle-btn {
+            margin: 0 12px;
+            padding: 12px 14px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            display: flex; align-items: center;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--accent-purple-bg);
+            color: var(--accent-purple);
+            border-color: var(--accent-purple);
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex: 1; 
+            margin-left: 70px;
+            display: flex; 
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* --- Header --- */
+        header {
+            background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .badge-enrolled {
+            background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);
+            padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .header-right { display: flex; align-items: center; gap: 20px; font-size: 13.5px; color: var(--text-muted); }
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444; padding: 6px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-logout:hover { 
+            background: rgba(239, 68, 68, 0.25); 
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- Page Container --- */
+        .dashboard-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 30px; }
+
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;
+        }
+        .page-title h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .page-title p { color: var(--text-muted); font-size: 14.5px; }
+        
+        .controls { display: flex; gap: 15px; flex-wrap: wrap; }
+        
+        .select-filter {
+            background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-alt);
+            padding: 10px 16px; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .select-filter:hover {
+            border-color: var(--accent-purple);
+        }
+        .select-filter option { background: var(--bg-panel); color: var(--text-main); }
+        
+        .btn-sync {
+            background: var(--accent-purple); color: #fff; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-sync:hover { 
+            background: var(--accent-purple-hover); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--accent-purple-glow);
+        }
+
+        /* --- Schedule Grouping --- */
+        .schedule-group { margin-bottom: 40px; }
+        .date-header {
+            font-size: 16px; font-weight: 600; color: var(--accent-purple);
+            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .schedule-card {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+            overflow: hidden; box-shadow: 0 4px 12px var(--shadow-color);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { color: var(--text-muted); font-weight: 500; padding: 15px 25px; border-bottom: 1px solid var(--border-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 16px 25px; border-bottom: 1px solid var(--border-subtle); color: var(--text-main); vertical-align: middle; transition: background 0.2s ease; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-purple-bg); }
+
+        .time-col { font-weight: 600; color: var(--text-alt); white-space: nowrap; }
+        .module-col { font-weight: 600; }
+        .mentor-col { color: var(--text-muted); }
+        .venue-col { color: var(--text-alt); display: flex; align-items: center; gap: 8px; }
+        
+        .status-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-align: center;
+        }
+        .status-live { background: var(--status-live-bg); color: var(--status-live-text); }
+        .status-upcoming { background: var(--status-upcoming-bg); color: var(--status-upcoming-text); }
+        .status-completed { background: var(--status-completed-bg); color: var(--text-muted); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Hover Expandable Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <span class="sidebar-brand-text">LessonNotify</span>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a class="sidebar-item" href="student.html">
+                        <div class="sidebar-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </div>
+                        <span class="sidebar-label">My Overview</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-item active" href="student_schedule.html">
+                        <div class="sidebar-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                        <span class="sidebar-label">Full Schedule</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-item" href="student_resources.html">
+                        <div class="sidebar-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <span class="sidebar-label">Resources & Materials</span>
+                    </a>
+                </li>
+                <li style="margin-top: 20px;">
+                    <a class="sidebar-item" href="student_settings.html">
+                        <div class="sidebar-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        </div>
+                        <span class="sidebar-label">My Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Light / Dark Theme Switch Button -->
+        <button class="theme-toggle-btn" id="themeToggleBtn">
+            <div class="sidebar-icon">
+                <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            <span class="sidebar-label" id="themeLabel">Light Mode</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header>
+            <div class="header-left">
+                <span class="badge-enrolled">Enrolled</span>
+            </div>
+            <div class="header-right">
+                <span id="studentNameDisplay">Student / Member</span>
+                <button class="btn-logout" id="btnLogout">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>Academic Calendar</h1>
+                    <p>View all your past, present, and future scheduled sessions.</p>
+                </div>
+                <div class="controls">
+                    <select class="select-filter">
+                        <option>All Modules</option>
+                        <option>UI/UX Design</option>
+                        <option>Frontend Frameworks</option>
+                    </select>
+                    <select class="select-filter">
+                        <option>This Week</option>
+                        <option>Next Week</option>
+                        <option>This Month</option>
+                    </select>
+                    <button class="btn-sync">Sync to External Calendar</button>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="schedule-group">
+                <div class="date-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Today (August 13, 2026)
+                </div>
+                <div class="schedule-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time Slot</th>
+                                <th>Session / Module</th>
+                                <th>Mentor / Instructor</th>
+                                <th>Venue / Link</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="time-col">10:00 AM - 12:00 PM</td>
+                                <td class="module-col">Introduction to UI/UX Design</td>
+                                <td class="mentor-col">Sarah Jenkins</td>
+                                <td class="venue-col">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    Hub Workspace B
+                                </td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">01:30 PM - 03:00 PM</td>
+                                <td class="module-col">Frontend Frameworks Bootcamp</td>
+                                <td class="mentor-col">David Chen</td>
+                                <td class="venue-col">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.6 11.6L22 7v10l-6.4-4.6v-1zM2 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+                                    Virtual (Meet Link)
+                                </td>
+                                <td><span class="status-badge status-upcoming">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tomorrow's Schedule -->
+            <div class="schedule-group">
+                <div class="date-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Tomorrow (August 14, 2026)
+                </div>
+                <div class="schedule-card">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="time-col">09:00 AM - 11:30 AM</td>
+                                <td class="module-col">Advanced CSS & Animations</td>
+                                <td class="mentor-col">David Chen</td>
+                                <td class="venue-col">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    Main Lab A
+                                </td>
+                                <td><span class="status-badge status-upcoming">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Next Week Schedule -->
+            <div class="schedule-group">
+                <div class="date-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Monday, August 17, 2026
+                </div>
+                <div class="schedule-card">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="time-col">10:00 AM - 12:00 PM</td>
+                                <td class="module-col">Prototyping in Figma</td>
+                                <td class="mentor-col">Sarah Jenkins</td>
+                                <td class="venue-col">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    Hub Workspace B
+                                </td>
+                                <td><span class="status-badge status-upcoming">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">02:00 PM - 04:00 PM</td>
+                                <td class="module-col">JavaScript DOM Manipulation</td>
+                                <td class="mentor-col">David Chen</td>
+                                <td class="venue-col">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.6 11.6L22 7v10l-6.4-4.6v-1zM2 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+                                    Virtual (Zoom Link)
+                                </td>
+                                <td><span class="status-badge status-upcoming">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Shared Theme Engine - connected to welcome screen & my_students
+        const htmlElem = document.documentElement;
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const themeLabel = document.getElementById('themeLabel');
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                htmlElem.setAttribute('data-theme', 'light');
+                if (themeLabel) themeLabel.textContent = 'Dark Mode';
+            } else {
+                document.body.classList.remove('light-mode');
+                htmlElem.setAttribute('data-theme', 'dark');
+                if (themeLabel) themeLabel.textContent = 'Light Mode';
+            }
+        }
+
+        // Check for Light Mode saved by Welcome Screen / My Students
+        const savedTheme = localStorage.getItem('lesson_notify_theme') || 'dark';
+        applyTheme(savedTheme);
+
+        // Sidebar Theme Toggle Button
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const isCurrentlyLight = document.body.classList.contains('light-mode');
+                const newTheme = isCurrentlyLight ? 'dark' : 'light';
+                applyTheme(newTheme);
+                localStorage.setItem('lesson_notify_theme', newTheme);
+            });
+        }
+
+        // Logout & User Name
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login?mode=signin';
+        });
+        
+        const studentName = localStorage.getItem('ln_user_name');
+        if (studentName) {
+            document.getElementById('studentNameDisplay').textContent = studentName;
+        }
+    </script>
+</body>
+</html>
