@@ -1,17 +1,8 @@
 {
   "short_name": "LessonNotify",
-  "name": "Lesson Notify Timetable Tracker",
-  "icons": [
-    {
-      "src": "https://flaticon.com",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "start_url": "/welcome.html",
-  "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
-  "display": "standalone",
-  "orientation": "portrait"
+  "name": "Lesson Notify App",
+  "start_url": "/",
+  "background_color": "#06080f",
+  "theme_color": "#10b981",
+  "display": "standalone"
 }

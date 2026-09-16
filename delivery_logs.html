@@ -274,10 +274,18 @@
                     <span class="sidebar-label">Send Notification</span>
                 </a>
             </li>
+            <li>
+                <a class="sidebar-item" href="virtual_classroom.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">Live Classroom</span>
+                </a>
+            </li>
             <li style="margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
                 <a class="sidebar-item" href="settings.html">
                     <div class="sidebar-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </div>
                     <span class="sidebar-label">Settings</span>
                 </a>
@@ -302,26 +310,27 @@
                     <h1>Notification Activity Logs</h1>
                     <p>Monitor the real-time status of automated SMS, Email, and Push alerts sent to your instructors.</p>
                 </div>
-                <button class="btn-action" onclick="alert('Exporting logs to CSV...')">Export CSV</button>
+                <!-- ID added to Export CSV Button -->
+                <button class="btn-action" id="btnExportCSV">Export CSV</button>
             </div>
 
             <!-- Filter & Search Bar -->
             <div class="filter-toolbar">
                 <div class="filter-group">
-                    <select class="filter-select">
+                    <select class="filter-select" id="statusFilter">
                         <option value="all">All Statuses</option>
                         <option value="delivered">Delivered</option>
                         <option value="failed">Failed</option>
                         <option value="pending">Pending</option>
                     </select>
-                    <select class="filter-select">
+                    <select class="filter-select" id="typeFilter">
                         <option value="all">All Alert Types</option>
                         <option value="sms">SMS Only</option>
                         <option value="email">Email Only</option>
                     </select>
                 </div>
                 <div>
-                    <input type="text" class="search-input" placeholder="Search by instructor or module...">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by instructor or module...">
                 </div>
             </div>
 
@@ -402,7 +411,72 @@
 
         document.getElementById('btnLogout').addEventListener('click', () => {
             localStorage.clear();
-            window.location.href = '/login?mode=signin';
+            window.location.href = '/auth.html?mode=signin';
+        });
+
+        /* --- Search & Dropdown Filtering Logic --- */
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const typeFilter = document.getElementById('typeFilter');
+        const tableRows = document.querySelectorAll('.data-table tbody tr');
+
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedStatus = statusFilter.value.toLowerCase();
+            const selectedType = typeFilter.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const recipientText = row.cells[1].textContent.toLowerCase();
+                const moduleText = row.cells[2].textContent.toLowerCase();
+                const methodText = row.cells[3].textContent.toLowerCase();
+                const statusBadge = row.cells[4].querySelector('.badge');
+                const statusText = statusBadge ? statusBadge.textContent.toLowerCase() : '';
+
+                const matchesSearch = recipientText.includes(searchTerm) || moduleText.includes(searchTerm);
+                const matchesStatus = selectedStatus === 'all' || statusText.includes(selectedStatus);
+                const matchesType = selectedType === 'all' || methodText.includes(selectedType);
+
+                if (matchesSearch && matchesStatus && matchesType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        typeFilter.addEventListener('change', filterTable);
+
+        /* --- Activated Export CSV Functionality --- */
+        function exportTableToCSV(filename) {
+            const csv = [];
+            const rows = document.querySelectorAll(".data-table tr");
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = [], cols = rows[i].querySelectorAll("th, td");
+                
+                // Exclude the last column ('Details' action column) from CSV output
+                for (let j = 0; j < cols.length - 1; j++) {
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/"/g, '""');
+                    row.push('"' + data + '"');
+                }
+                csv.push(row.join(","));
+            }
+
+            // Create download link for the CSV file
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        document.getElementById('btnExportCSV').addEventListener('click', () => {
+            exportTableToCSV('lesson_notify_delivery_logs.csv');
         });
     </script>
 </body>

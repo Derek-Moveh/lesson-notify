@@ -15,7 +15,7 @@ async function authFetch(url, options = {}) {
         localStorage.removeItem('ln_user_role');
         localStorage.removeItem('ln_user_name');
         localStorage.removeItem('ln_user_school_id');
-        window.location.href = '/login';
+        window.location.href = '/auth.html?mode=signin';
         throw new Error('Session expired. Redirecting to login.');
     }
 
@@ -30,12 +30,21 @@ function requireLogin(requiredRole) {
     const role = localStorage.getItem('ln_user_role');
 
     if (!token) {
-        window.location.href = '/login';
+        window.location.href = '/auth.html?mode=signin';
         return false;
     }
     if (requiredRole && role !== requiredRole) {
         alert('🔴 Access Denied: You do not have permission to view this page.');
-        window.location.href = role === 'teacher' ? '/teacher-dashboard' : '/login';
+        // Redirect users to their appropriate dashboard based on role
+        if (role === 'admin') {
+            window.location.href = '/admin.html';
+        } else if (role === 'teacher') {
+            window.location.href = '/teacher.html';
+        } else if (role === 'student') {
+            window.location.href = '/student.html';
+        } else {
+            window.location.href = '/auth.html?mode=signin';
+        }
         return false;
     }
     return true;

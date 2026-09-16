@@ -12,7 +12,6 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --text-alt: #e2e8f0;
-            --text-metric: #64748b;
             --sidebar-bg: rgba(11, 15, 25, 0.95);
             --header-bg: rgba(11, 15, 25, 0.85);
             --card-bg: rgba(11, 15, 25, 0.7);
@@ -30,7 +29,6 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --text-alt: #1e293b;
-            --text-metric: #64748b;
             --sidebar-bg: rgba(255, 255, 255, 0.95);
             --header-bg: rgba(255, 255, 255, 0.85);
             --card-bg: #ffffff;
@@ -168,7 +166,7 @@
         
         .welcome-banner { 
             background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(16, 185, 129, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.2); 
+            border: 1px solid rgba(37, 99, 235, 0.2); 
             border-radius: 12px; padding: 30px; margin-bottom: 30px;
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
         }
@@ -213,22 +211,73 @@
         
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
         .badge.active { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge.scheduled { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
 
-        .btn-action {
-            background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s;
-        }
+        .btn-action { background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .btn-action:hover { background: #1d4ed8; }
         
-        .btn-subtle {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-alt); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s;
-        }
+        .btn-subtle { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-alt); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
         .btn-subtle:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .btn-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+        /* --- Gradient Modal Styling --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.75);
+            backdrop-filter: blur(6px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1; pointer-events: auto;
+        }
+        .modal-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(16, 185, 129, 0.25));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            width: 100%; max-width: 520px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: translateY(15px);
+            transition: transform 0.25s ease;
+            position: relative;
+        }
+        .modal-overlay.open .modal-card {
+            transform: translateY(0);
+        }
+        .modal-header-row {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .modal-close {
+            background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--text-main); }
+        
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+        .form-input, .form-select {
+            width: 100%; background: #0b0f19; border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); padding: 10px 14px; border-radius: 8px; font-size: 13.5px; outline: none; transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus { border-color: #3b82f6; }
+        .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
+        .modal-actions-right { display: flex; gap: 10px; }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+            color: var(--text-alt); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
 
-    <!-- Hover Expandable Sidebar -->
+    <!-- Admin Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -276,6 +325,14 @@
                     <span class="sidebar-label">Send Notification</span>
                 </a>
             </li>
+             <li>
+                <a class="sidebar-item" href="virtual_classroom.html">
+                    <div class="sidebar-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">Live Classroom</span>
+                </a>
+            </li>
             <li style="margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
                 <a class="sidebar-item" href="settings.html">
                     <div class="sidebar-icon">
@@ -290,7 +347,7 @@
     <!-- Main Content Wrapper -->
     <div class="main-wrapper">
         <header>
-            <div class="header-title">Timetable Management <span style="font-size: 11px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); margin-left: 10px;">Master Grid</span></div>
+            <div class="header-title">Timetable Management <span style="font-size: 11px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); margin-left: 10px;">Master Control</span></div>
             <div class="user-meta">
                 <span id="adminNameDisplay">Workspace Admin</span>
                 <button class="btn-logout" id="btnLogout">Sign Out</button>
@@ -302,80 +359,63 @@
             <div class="welcome-banner">
                 <div>
                     <h1>Master Schedule Controller</h1>
-                    <p>Configure recurring module intervals, automate pre-lesson warning notifications, and manage hall/link allocations.</p>
+                    <p>Configure recurring module intervals, assign venues, and manage notification triggers.</p>
                 </div>
-                <button class="btn-action" onclick="alert('Open New Timetable Creator Modal')">+ Create Timetable Entry</button>
+                <button class="btn-action" id="btnOpenEntryModal">+ Create Timetable Entry</button>
             </div>
 
-            <!-- Filter & Search Bar -->
             <div class="filter-toolbar">
                 <div class="filter-group">
-                    <select class="filter-select">
-                        <option value="all">All Days (Mon - Sat)</option>
-                        <option value="mon">Monday</option>
-                        <option value="tue">Tuesday</option>
-                        <option value="wed">Wednesday</option>
-                        <option value="thu">Thursday</option>
-                        <option value="fri">Friday</option>
-                    </select>
-                    <select class="filter-select">
-                        <option value="all">All Tracks / Departments</option>
-                        <option value="tech">Software Engineering</option>
-                        <option value="design">UI/UX Product Design</option>
-                        <option value="data">Data Science & AI</option>
+                    <select class="filter-select" id="dayFilter">
+                        <option value="all">All Days (Mon - Fri)</option>
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
                     </select>
                 </div>
                 <div>
-                    <input type="text" class="search-input" placeholder="Search sessions or mentors...">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search sessions or instructors...">
                 </div>
             </div>
 
             <div class="card-section">
                 <div class="section-header">
                     <h3 class="section-title">Active Schedule Matrix</h3>
-                    <span style="font-size: 12px; color: #10b981; font-weight: 600;">● Automated SMS & Push Alerts Active</span>
+                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Real-time sync enabled</span>
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Day & Time Slot</th>
-                                <th>Course / Module Title</th>
+                                <th>Course / Module</th>
                                 <th>Assigned Instructor</th>
-                                <th>Venue / Virtual Room</th>
+                                <th>Venue</th>
                                 <th>Alert Status</th>
-                                <th style="text-align: right;">Actions</th>
+                                <th style="text-align: right;">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="timetableTableBody">
                             <tr>
-                                <td><strong>Monday</strong><br><span style="font-size:12px; color:var(--text-muted);">09:00 AM - 11:00 AM</span></td>
+                                <td>Monday<br><span style="font-size:11px; color:var(--text-muted);">08:00 AM - 10:00 AM</span></td>
                                 <td>Advanced Network Architecture</td>
                                 <td>Dr. Samuel K.</td>
                                 <td>Lab Suite A</td>
                                 <td><span class="badge active">Automation On</span></td>
                                 <td style="text-align: right;">
-                                    <button class="btn-subtle" onclick="alert('Editing timetable slot...')">Edit</button>
+                                    <button class="btn-subtle" onclick="openEditModal(this)">Edit</button>
                                 </td>
                             </tr>
                             <tr>
-                                <td><strong>Monday</strong><br><span style="font-size:12px; color:var(--text-muted);">01:00 PM - 03:00 PM</span></td>
-                                <td>UI/UX Systems & Design Thinking</td>
-                                <td>Sarah Jenkins</td>
-                                <td>Design Studio B</td>
-                                <td><span class="badge active">Automation On</span></td>
-                                <td style="text-align: right;">
-                                    <button class="btn-subtle" onclick="alert('Editing timetable slot...')">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tuesday</strong><br><span style="font-size:12px; color:var(--text-muted);">10:30 AM - 12:30 PM</span></td>
+                                <td>Tuesday<br><span style="font-size:11px; color:var(--text-muted);">10:30 AM - 12:30 PM</span></td>
                                 <td>Database Systems & Concurrency</td>
                                 <td>Prof. Adaeze O.</td>
                                 <td>Main Hall 2</td>
-                                <td><span class="badge scheduled">Pending Sync</span></td>
+                                <td><span class="badge active">Automation On</span></td>
                                 <td style="text-align: right;">
-                                    <button class="btn-subtle" onclick="alert('Editing timetable slot...')">Edit</button>
+                                    <button class="btn-subtle" onclick="openEditModal(this)">Edit</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -383,6 +423,73 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Gradient Modal Window: Create / Edit Timetable Entry -->
+    <div class="modal-overlay" id="timetableEntryModal">
+        <div class="modal-card">
+            <div class="modal-header-row">
+                <h3 class="modal-title" id="modalTitleText">Create Timetable Entry</h3>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <form id="timetableEntryForm">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Day</label>
+                        <select class="form-select" id="entryDay" required>
+                            <option value="" disabled selected>Select day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Slot</label>
+                        <select class="form-select" id="entryTime" required>
+                            <option value="08:00 AM - 10:00 AM">08:00 AM - 10:00 AM</option>
+                            <option value="10:30 AM - 12:30 PM">10:30 AM - 12:30 PM</option>
+                            <option value="01:00 PM - 03:00 PM">01:00 PM - 03:00 PM</option>
+                            <option value="03:30 PM - 05:30 PM">03:30 PM - 05:30 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Course / Module</label>
+                    <input type="text" class="form-input" id="entryModule" placeholder="e.g., Advanced Network Architecture" required>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Assigned Instructor</label>
+                        <select class="form-select" id="entryInstructor" required>
+                            <option value="" disabled selected>Select instructor</option>
+                            <option value="Dr. Samuel K.">Dr. Samuel K.</option>
+                            <option value="Prof. Adaeze O.">Prof. Adaeze O.</option>
+                            <option value="Sarah Jenkins">Sarah Jenkins</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Venue</label>
+                        <input type="text" class="form-input" id="entryVenue" placeholder="e.g., Room 204" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alert status</label>
+                    <select class="form-select" id="entryStatus">
+                        <option value="Automation On">Automation On</option>
+                        <option value="Paused">Paused</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-danger" id="btnDeleteModal" style="display: none;">Delete Entry</button>
+                    <div class="modal-actions-right">
+                        <button type="button" class="btn-secondary" id="btnCancelModal">Cancel</button>
+                        <button type="submit" class="btn-action">Save Timetable</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -397,7 +504,144 @@
 
         document.getElementById('btnLogout').addEventListener('click', () => {
             localStorage.clear();
-            window.location.href = '/login?mode=signin';
+            window.location.href = '/auth.html?mode=signin';
+        });
+
+        /* --- Search & Filter Logic --- */
+        const searchInput = document.getElementById('searchInput');
+        const dayFilter = document.getElementById('dayFilter');
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase().trim();
+            const selectedDay = dayFilter.value.toLowerCase();
+            const rows = document.querySelectorAll('#timetableTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const dayCellHtml = row.cells[0].textContent.toLowerCase();
+                const dayMatch = selectedDay === 'all' || dayCellHtml.includes(selectedDay);
+                const searchMatch = text.includes(query);
+
+                if (dayMatch && searchMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        dayFilter.addEventListener('change', filterTable);
+
+        /* --- Modal, Edit & Delete Logic --- */
+        const modal = document.getElementById('timetableEntryModal');
+        const btnOpen = document.getElementById('btnOpenEntryModal');
+        const btnClose = document.getElementById('btnCloseModal');
+        const btnCancel = document.getElementById('btnCancelModal');
+        const btnDelete = document.getElementById('btnDeleteModal');
+        const form = document.getElementById('timetableEntryForm');
+        const modalTitleText = document.getElementById('modalTitleText');
+
+        let currentEditingRow = null;
+
+        // Open modal for creating a new entry
+        btnOpen.addEventListener('click', () => {
+            currentEditingRow = null;
+            modalTitleText.textContent = "Create Timetable Entry";
+            form.reset();
+            btnDelete.style.display = 'none'; // Hide delete button on create mode
+            modal.classList.add('open');
+        });
+
+        // Function triggered when clicking "Edit" on a row
+        function openEditModal(button) {
+            const row = button.closest('tr');
+            currentEditingRow = row;
+            modalTitleText.textContent = "Edit Timetable Entry";
+            btnDelete.style.display = 'block'; // Show delete button on edit mode
+
+            // Extract values from table cells
+            const dayTimeHtml = row.cells[0].innerHTML.split('<br>');
+            const day = dayTimeHtml[0].trim();
+            const timeSpan = row.cells[0].querySelector('span');
+            const time = timeSpan ? timeSpan.textContent.trim() : '';
+            const moduleName = row.cells[1].textContent.trim();
+            const instructor = row.cells[2].textContent.trim();
+            const venue = row.cells[3].textContent.trim();
+            const statusSpan = row.cells[4].querySelector('.badge');
+            const status = statusSpan ? statusSpan.textContent.trim() : 'Automation On';
+
+            // Populate form fields with existing data
+            document.getElementById('entryDay').value = day;
+            document.getElementById('entryTime').value = time;
+            document.getElementById('entryModule').value = moduleName;
+            document.getElementById('entryInstructor').value = instructor;
+            document.getElementById('entryVenue').value = venue;
+            document.getElementById('entryStatus').value = status;
+
+            modal.classList.add('open');
+        }
+
+        btnClose.addEventListener('click', () => modal.classList.remove('open'));
+        btnCancel.addEventListener('click', () => modal.classList.remove('open'));
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('open');
+        });
+
+        // Delete Entry handler
+        btnDelete.addEventListener('click', () => {
+            if (currentEditingRow) {
+                if (confirm("Are you sure you want to delete this timetable entry?")) {
+                    currentEditingRow.remove();
+                    modal.classList.remove('open');
+                    currentEditingRow = null;
+                    form.reset();
+                    alert("Timetable entry deleted successfully.");
+                }
+            }
+        });
+
+        // Form Submission handler for both Create and Edit actions
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const day = document.getElementById('entryDay').value;
+            const time = document.getElementById('entryTime').value;
+            const mod = document.getElementById('entryModule').value;
+            const instructor = document.getElementById('entryInstructor').value;
+            const venue = document.getElementById('entryVenue').value;
+            const status = document.getElementById('entryStatus').value;
+
+            if (currentEditingRow) {
+                // Update existing row
+                currentEditingRow.cells[0].innerHTML = `${day}<br><span style="font-size:11px; color:var(--text-muted);">${time}</span>`;
+                currentEditingRow.cells[1].textContent = mod;
+                currentEditingRow.cells[2].textContent = instructor;
+                currentEditingRow.cells[3].textContent = venue;
+                currentEditingRow.cells[4].innerHTML = `<span class="badge active">${status}</span>`;
+                alert(`Timetable entry for "${mod}" updated successfully!`);
+            } else {
+                // Append new row to table
+                const tableBody = document.getElementById('timetableTableBody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${day}<br><span style="font-size:11px; color:var(--text-muted);">${time}</span></td>
+                    <td>${mod}</td>
+                    <td>${instructor}</td>
+                    <td>${venue}</td>
+                    <td><span class="badge active">${status}</span></td>
+                    <td style="text-align: right;">
+                        <button class="btn-subtle" onclick="openEditModal(this)">Edit</button>
+                    </td>
+                `;
+                tableBody.appendChild(newRow);
+                alert(`Timetable entry for "${mod}" at "${venue}" successfully created!`);
+            }
+
+            form.reset();
+            modal.classList.remove('open');
+            currentEditingRow = null;
+            filterTable(); // Re-apply filter after updates
         });
     </script>
 </body>

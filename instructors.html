@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson Notify — Instructors</title>
     <style>
-        /* --- CSS Variables for Theming --- */
         :root {
             --bg-main: #030712;
             --text-main: #f8fafc;
@@ -23,7 +22,6 @@
             --input-bg: rgba(255, 255, 255, 0.02);
         }
 
-        /* Light Mode Overrides */
         body.light-mode {
             --bg-main: #f1f5f9;
             --text-main: #0f172a;
@@ -49,7 +47,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- Hover Expandable Sidebar --- */
         .sidebar {
             position: fixed; top: 0; left: 0; height: 100vh; width: 70px;
             background: var(--sidebar-bg); backdrop-filter: blur(12px);
@@ -67,7 +64,6 @@
         .sidebar-brand { display: flex; align-items: center; padding: 0 20px; margin-bottom: 20px; color: var(--text-main); white-space: nowrap; }
         .sidebar-brand svg { min-width: 28px; margin-right: 18px; color: #10b981; }
 
-        /* --- Main Content Wrapper --- */
         .main-wrapper { flex: 1; margin-left: 70px; display: flex; flex-direction: column; min-width: 0; }
         
         header { background: var(--header-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
@@ -87,7 +83,6 @@
         .welcome-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
         .welcome-banner p { color: var(--text-muted); font-size: 14px; }
 
-        /* Buttons & Toolbar */
         .btn-primary { background: #3b82f6; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary:hover { background: #2563eb; }
         
@@ -98,23 +93,22 @@
 
         .toolbar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
         .toolbar-group { display: flex; gap: 10px; align-items: center; }
-        .form-control { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 14px; border-radius: 6px; font-size: 13.5px; outline: none; transition: 0.2s; }
+        .form-control { background: var(--table-border-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 14px; border-radius: 6px; font-size: 13.5px; outline: none; transition: 0.2s; }
         .form-control:focus { border-color: #3b82f6; }
 
-        /* Card & Table */
         .card-section { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: background 0.3s; margin-bottom: 30px; }
         .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         .data-table th { background: var(--table-th-bg); color: var(--text-muted); font-weight: 600; padding: 15px 20px; border-bottom: 1px solid var(--table-border-dark); }
         .data-table td { padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); color: var(--text-alt); vertical-align: middle; }
+        .data-table tbody tr { transition: background 0.2s; }
+        .data-table tbody tr:hover { background: rgba(59, 130, 246, 0.04); }
         
-        /* Instructor Profile Cell */
         .instructor-profile { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #3b82f6; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; position: relative; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #3b82f6; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; position: relative; flex-shrink: 0; }
         .avatar.purple { background: #8b5cf6; }
         .avatar.emerald { background: #10b981; }
         .avatar.orange { background: #f59e0b; }
         
-        /* Online/Offline Indicator */
         .status-dot { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--card-bg); }
         .status-dot.online { background-color: #10b981; }
         .status-dot.offline { background-color: #64748b; }
@@ -123,16 +117,83 @@
         .instructor-name { font-weight: 600; color: var(--text-main); }
         .instructor-role { font-size: 12px; color: var(--text-muted); }
 
-        /* Badges */
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
         .badge.registered { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
         .badge.unregistered { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-card {
+            position: relative;
+            background: var(--card-bg); 
+            border-radius: 12px; width: 90%; max-width: 450px; padding: 25px;
+            box-shadow: 0 25px 60px var(--shadow-color);
+            display: flex; flex-direction: column;
+            transform: translateY(20px); transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        .modal-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #10b981, #8b5cf6, #3b82f6, #10b981);
+            background-size: 300% 300%;
+            z-index: -1;
+            border-radius: 14px;
+            animation: techFlow 6s ease infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes techFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; line-height: 1; }
+        .close-modal:hover { color: #ef4444; }
+        
+        .form-group { margin-bottom: 15px; width: 100%; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+        .form-group .form-control { width: 100%; }
+
+        .profile-bio-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13.5px;
+            color: var(--text-alt);
+            line-height: 1.5;
+            margin-top: 5px;
+        }
+        .profile-header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 15px;
+        }
+        .profile-header-info .avatar { width: 54px; height: 54px; font-size: 20px; }
+        .profile-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .profile-meta-item label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 3px; }
+        .profile-meta-item span { font-size: 13.5px; color: var(--text-alt); font-weight: 500; }
     </style>
 </head>
 <body>
 
-    <!-- Admin Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -157,7 +218,6 @@
                 </a>
             </li>
             <li>
-                <!-- Instructors is Active -->
                 <a class="sidebar-item active" href="instructors.html">
                     <div class="sidebar-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -181,6 +241,14 @@
                     <span class="sidebar-label">Send Notification</span>
                 </a>
             </li>
+            <li>
+                <a class="sidebar-item" href="virtual_classroom.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    </div>
+                    <span class="sidebar-label">Live Classroom</span>
+                </a>
+            </li>
             <li style="margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
                 <a class="sidebar-item" href="settings.html">
                     <div class="sidebar-icon">
@@ -192,7 +260,6 @@
         </ul>
     </aside>
 
-    <!-- Main Content -->
     <div class="main-wrapper">
         <header>
             <div class="header-title">Instructor Directory</div>
@@ -207,35 +274,30 @@
             <div class="welcome-banner">
                 <div>
                     <h1>Faculty Management</h1>
-                    <p>View instructor details, monitor online status, and invite faculty to create Lesson Notify accounts.</p>
+                    <p id="schoolBannerText">View real instructor details and manage faculty accounts for your institution.</p>
                 </div>
-                <button class="btn-primary" onclick="alert('Opening Add Instructor form...')">
+                <button class="btn-primary" id="btnOpenAddInstructor">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add Instructor
                 </button>
             </div>
 
-            <!-- Filter & Search Toolbar -->
             <div class="toolbar">
                 <div class="toolbar-group">
-                    <select class="form-control">
+                    <select class="form-control" id="departmentFilter">
                         <option value="all">All Departments</option>
-                        <option value="cs">Computer Science</option>
-                        <option value="engineering">Engineering</option>
-                        <option value="design">Arts & Design</option>
                     </select>
-                    <select class="form-control">
+                    <select class="form-control" id="statusFilter">
                         <option value="all">All Statuses</option>
                         <option value="registered">Registered</option>
                         <option value="unregistered">Needs Invite</option>
                     </select>
                 </div>
                 <div>
-                    <input type="text" class="form-control" placeholder="Search by name, email or phone..." style="width: 260px;">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email or phone..." style="width: 260px;">
                 </div>
             </div>
 
-            <!-- Instructors Table -->
             <div class="card-section" style="overflow-x: auto;">
                 <table class="data-table">
                     <thead>
@@ -247,109 +309,9 @@
                             <th style="text-align: right;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Registered / Online -->
+                    <tbody id="instructorsTableBody">
                         <tr>
-                            <td>
-                                <div class="instructor-profile">
-                                    <div class="avatar purple">
-                                        SK
-                                        <div class="status-dot online" title="Online Now"></div>
-                                    </div>
-                                    <div class="instructor-details">
-                                        <span class="instructor-name">Dr. Samuel K.</span>
-                                        <span class="instructor-role">Senior Lecturer</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 13px;">samuel.k@university.edu</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">+234 801 234 5678</div>
-                            </td>
-                            <td>Computer Science</td>
-                            <td><span class="badge registered">Registered</span></td>
-                            <td style="text-align: right; white-space: nowrap;">
-                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
-                                <button class="btn-subtle">Edit</button>
-                            </td>
-                        </tr>
-
-                        <!-- Unregistered / Offline -->
-                        <tr>
-                            <td>
-                                <div class="instructor-profile">
-                                    <div class="avatar orange">
-                                        SJ
-                                        <div class="status-dot offline" title="Offline"></div>
-                                    </div>
-                                    <div class="instructor-details">
-                                        <span class="instructor-name">Sarah Jenkins</span>
-                                        <span class="instructor-role">Adjunct Professor</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 13px;">s.jenkins@university.edu</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">+234 802 345 6789</div>
-                            </td>
-                            <td>Arts & Design</td>
-                            <td><span class="badge unregistered">No Account</span></td>
-                            <td style="text-align: right; white-space: nowrap;">
-                                <button class="btn-subtle btn-invite" style="margin-right: 5px;" onclick="alert('Invitation link sent to s.jenkins@university.edu via Email and SMS.')">Send Invite</button>
-                                <button class="btn-subtle">Edit</button>
-                            </td>
-                        </tr>
-
-                        <!-- Registered / Offline -->
-                        <tr>
-                            <td>
-                                <div class="instructor-profile">
-                                    <div class="avatar emerald">
-                                        AO
-                                        <div class="status-dot offline" title="Offline"></div>
-                                    </div>
-                                    <div class="instructor-details">
-                                        <span class="instructor-name">Prof. Adaeze O.</span>
-                                        <span class="instructor-role">Department Head</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 13px;">adaeze.o@university.edu</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">+234 803 456 7890</div>
-                            </td>
-                            <td>Computer Science</td>
-                            <td><span class="badge registered">Registered</span></td>
-                            <td style="text-align: right; white-space: nowrap;">
-                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
-                                <button class="btn-subtle">Edit</button>
-                            </td>
-                        </tr>
-
-                        <!-- Registered / Online -->
-                        <tr>
-                            <td>
-                                <div class="instructor-profile">
-                                    <div class="avatar">
-                                        TM
-                                        <div class="status-dot online" title="Online Now"></div>
-                                    </div>
-                                    <div class="instructor-details">
-                                        <span class="instructor-name">Engr. Tobi M.</span>
-                                        <span class="instructor-role">Lecturer I</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 13px;">tobi.m@university.edu</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">+234 804 567 8901</div>
-                            </td>
-                            <td>Engineering</td>
-                            <td><span class="badge registered">Registered</span></td>
-                            <td style="text-align: right; white-space: nowrap;">
-                                <button class="btn-subtle" style="margin-right: 5px;">View Schedule</button>
-                                <button class="btn-subtle">Edit</button>
-                            </td>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading instructors...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -358,18 +320,238 @@
         </div>
     </div>
 
+    <!-- Add Instructor Modal Popup -->
+    <div class="modal-overlay" id="addInstructorModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add New Instructor</h3>
+                <button type="button" class="close-modal" id="closeInstructorModal">&times;</button>
+            </div>
+            <form id="addInstructorForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" name="fullName" placeholder="e.g., Dr. Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" name="email" placeholder="jane.doe@university.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Temporary password" required>
+                </div>
+                <div class="form-group">
+                    <label>Department / School</label>
+                    <input type="text" class="form-control" name="schoolName" id="modalSchoolInput" readonly>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Register Instructor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Instructor Profile Modal Popup -->
+    <div class="modal-overlay" id="instructorProfileModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Instructor Profile</h3>
+                <button type="button" class="close-modal" id="closeProfileModal">&times;</button>
+            </div>
+            
+            <div class="profile-header-info">
+                <div class="avatar" id="profileModalAvatar">
+                    <span id="profileModalInitials">SK</span>
+                    <div class="status-dot" id="profileModalStatusDot"></div>
+                </div>
+                <div>
+                    <h4 id="profileModalName" style="font-size: 16px; font-weight: 700; color: var(--text-main);"></h4>
+                    <span id="profileModalRole" style="font-size: 13px; color: var(--text-muted);"></span>
+                </div>
+            </div>
+
+            <div class="profile-details-grid">
+                <div class="profile-meta-item">
+                    <label>Department</label>
+                    <span id="profileModalDept"></span>
+                </div>
+                <div class="profile-meta-item">
+                    <label>App Account</label>
+                    <span id="profileModalStatus"></span>
+                </div>
+                <div class="profile-meta-item">
+                    <label>Email Address</label>
+                    <span id="profileModalEmail"></span>
+                </div>
+                <div class="profile-meta-item">
+                    <label>Phone Number</label>
+                    <span id="profileModalPhone"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Biography & Background</label>
+                <div class="profile-bio-box" id="profileModalBio"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Check for Light Mode
         const savedTheme = localStorage.getItem('lesson_notify_theme'); 
         if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
 
         const adminName = localStorage.getItem('ln_user_name') || 'Workspace Admin';
+        const adminSchool = localStorage.getItem('ln_user_school') || '';
+        
         document.getElementById('adminNameDisplay').textContent = adminName;
+        if (adminSchool) {
+            document.getElementById('schoolBannerText').textContent = `Managing faculty members registered under ${adminSchool}.`;
+            document.getElementById('modalSchoolInput').value = adminSchool;
+        }
 
         document.getElementById('btnLogout').addEventListener('click', () => {
             localStorage.clear();
-            window.location.href = '/login?mode=signin';
+            window.location.href = '/';
         });
+
+        // --- Fetch Real Instructors From Database ---
+       async function fetchInstructors() {
+    try {
+        const url = adminSchool ? `/api/admin/instructors?school=${encodeURIComponent(adminSchool)}` : '/api/admin/instructors';
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
+        if (data.success) {
+            renderInstructors(data.instructors);
+        } else {
+            document.getElementById('instructorsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 30px;">${data.error || 'Failed to load instructors.'}</td></tr>`;
+        }
+    } catch (err) {
+        console.error('Error fetching instructors:', err);
+        document.getElementById('instructorsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 30px;">Server connection error. Please check your backend service.</td></tr>`;
+    }
+}
+
+        function renderInstructors(instructors) {
+            const tbody = document.getElementById('instructorsTableBody');
+            tbody.innerHTML = '';
+
+            if (instructors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">No instructors registered under your school yet.</td></tr>`;
+                return;
+            }
+
+            instructors.forEach(teacher => {
+                const tr = document.createElement('tr');
+                tr.dataset.name = teacher.name;
+                tr.dataset.role = teacher.roleTitle;
+                tr.dataset.email = teacher.email;
+                tr.dataset.phone = teacher.phone;
+                tr.dataset.dept = teacher.dept;
+                tr.dataset.status = teacher.status;
+                tr.dataset.initials = teacher.initials;
+                tr.dataset.avatarColor = teacher.avatarColor;
+                tr.dataset.online = teacher.online;
+                tr.dataset.bio = teacher.bio;
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="instructor-profile">
+                            <div class="avatar ${teacher.avatarColor}">
+                                ${teacher.initials}
+                                <div class="status-dot ${teacher.online ? 'online' : 'offline'}" title="${teacher.online ? 'Online Now' : 'Offline'}"></div>
+                            </div>
+                            <div class="instructor-details">
+                                <span class="instructor-name">${teacher.name}</span>
+                                <span class="instructor-role">${teacher.roleTitle}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-size: 13px;">${teacher.email}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">${teacher.phone}</div>
+                    </td>
+                    <td>${teacher.dept}</td>
+                    <td><span class="badge registered">${teacher.status}</span></td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <button class="btn-subtle" onclick="openProfileModal(this.closest('tr'))">View Profile</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initialize Fetch on Page Load
+        fetchInstructors();
+
+        // --- Add Instructor Modal Logic ---
+        const modalOverlay = document.getElementById('addInstructorModal');
+        const btnOpenModal = document.getElementById('btnOpenAddInstructor');
+        const btnCloseModal = document.getElementById('closeInstructorModal');
+        const addInstructorForm = document.getElementById('addInstructorForm');
+
+        btnOpenModal.addEventListener('click', () => modalOverlay.classList.add('active'));
+        btnCloseModal.addEventListener('click', () => modalOverlay.classList.remove('active'));
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove('active'); });
+
+        addInstructorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(addInstructorForm);
+            const payload = {
+                fullName: addInstructorForm.querySelector('input[name="fullName"]').value,
+                email: addInstructorForm.querySelector('input[name="email"]').value,
+                password: addInstructorForm.querySelector('input[name="password"]').value,
+                role: 'teacher',
+                schoolName: adminSchool || 'General Institution'
+            };
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Instructor registered successfully under your school!');
+                    modalOverlay.classList.remove('active');
+                    addInstructorForm.reset();
+                    fetchInstructors(); // Refresh table
+                } else {
+                    alert(data.error || 'Failed to register instructor.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error during registration.');
+            }
+        });
+
+        // --- Profile Modal Logic ---
+        const profileModalOverlay = document.getElementById('instructorProfileModal');
+        const btnCloseProfileModal = document.getElementById('closeProfileModal');
+
+        function openProfileModal(row) {
+            document.getElementById('profileModalName').textContent = row.dataset.name;
+            document.getElementById('profileModalRole').textContent = row.dataset.role;
+            document.getElementById('profileModalEmail').textContent = row.dataset.email;
+            document.getElementById('profileModalPhone').textContent = row.dataset.phone;
+            document.getElementById('profileModalDept').textContent = row.dataset.dept;
+            document.getElementById('profileModalStatus').textContent = row.dataset.status;
+            document.getElementById('profileModalBio').textContent = row.dataset.bio;
+            document.getElementById('profileModalInitials').textContent = row.dataset.initials;
+
+            document.getElementById('profileModalAvatar').className = 'avatar ' + (row.dataset.avatarColor || '');
+            document.getElementById('profileModalStatusDot').className = 'status-dot ' + (row.dataset.online === 'true' ? 'online' : 'offline');
+
+            profileModalOverlay.classList.add('active');
+        }
+
+        btnCloseProfileModal.addEventListener('click', () => profileModalOverlay.classList.remove('active'));
+        profileModalOverlay.addEventListener('click', (e) => { if (e.target === profileModalOverlay) profileModalOverlay.classList.remove('active'); });
     </script>
 </body>
 </html>

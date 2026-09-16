@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facility Administrator Registration | Lesson Notify</title>
+    <style>
+        :root {
+            --bg-dark: #050811;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --border-color: #1f2937;
+            --accent-blue: #3b82f6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --error-red: #ef4444;
+            --success-green: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- LIGHT MODE OVERRIDES --- */
+        body.light-theme {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        body.light-theme .register-container {
+            background-color: rgba(255, 255, 255, 0.88);
+            border-color: rgba(226, 232, 240, 0.9);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        }
+        body.light-theme .register-container:hover {
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        body.light-theme .register-header h1 {
+            color: #0f172a;
+            text-shadow: none;
+        }
+        body.light-theme .register-header p {
+            color: #475569;
+        }
+        body.light-theme .form-group label {
+            color: #334155;
+        }
+        body.light-theme .form-group input {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        body.light-theme .form-group input:focus {
+            background-color: #ffffff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        /* --- HIGH-TECH LIVE BACKGROUND --- */
+        .live-bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+            animation: moveGrid 15s linear infinite;
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            top: 10%;
+            left: 20%;
+            animation: floatOrb 10s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            bottom: 5%;
+            right: 15%;
+            animation: floatOrb2 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 40px) scale(1.2); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, -50px) scale(1.1); }
+        }
+        /* --------------------------------- */
+
+        .register-container {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .register-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .register-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(10, 15, 28, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .form-group input:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 15px rgba(59, 130, 246, 0.4);
+            background-color: #0a0f1c;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            transform: scale(1.03);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled {
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: scale(1);
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-box.error {
+            display: block;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid var(--error-red);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .message-box.success {
+            display: block;
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid var(--success-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Background Elements -->
+    <div class="live-bg-grid"></div>
+    <div class="glow-orb"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="register-container">
+        <div class="register-header">
+            <h1>Register Workspace</h1>
+            <p>Create a new Facility Administrator account.</p>
+        </div>
+
+        <!-- Updated Form Structure -->
+        <form id="adminRegisterForm">
+            
+            <!-- STEP 1: Basic Info -->
+            <div id="step1">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Jane Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input type="email" id="email" name="email" required placeholder="admin@school.edu">
+                </div>
+                <div class="form-group">
+                    <label for="school_name">Institution / School Name</label>
+                    <input type="text" id="school_name" name="school_name" required placeholder="Springfield High">
+                </div>
+                <div class="form-group">
+                    <label for="password">Secure Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="button" class="btn-submit" id="btnNext">Send Authorization Key</button>
+            </div>
+
+            <!-- STEP 2: Email Verification (Hidden Initially) -->
+            <div id="step2" style="display: none;">
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--accent-blue); text-align: center;">
+                    We sent a 6-digit authorization code to your email.
+                </p>
+                <div class="form-group">
+                    <label for="system_authorization_key">Enter Authorization Key</label>
+                    <input type="text" id="system_authorization_key" name="system_authorization_key" placeholder="e.g., 123456" autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit" id="submitBtn">Finalize Registration</button>
+                
+                <!-- Go back button to fix email if typed wrong -->
+                <button type="button" class="btn-submit" id="btnBack" style="background: transparent; color: var(--text-muted); box-shadow: none; margin-top: 5px;">← Edit Details</button>
+            </div>
+
+        </form>
+
+        <div id="messageBox" class="message-box"></div>
+        <a href="auth.html?mode=signin&role=admin" class="back-link">← Back to Login</a>
+    </div>
+
+    <!-- Updated Script Logic -->
+    <script>
+        if (localStorage.getItem('lesson_notify_theme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const btnNext = document.getElementById('btnNext');
+        const btnBack = document.getElementById('btnBack');
+        const messageBox = document.getElementById('messageBox');
+        const registerForm = document.getElementById('adminRegisterForm');
+
+        // Function to display messages
+        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = 'message-box ' + type;
+        }
+
+        // --- Handle Moving to Step 2 (Sending Email) ---
+        btnNext.addEventListener('click', async () => {
+            // Basic validation for step 1
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const school_name = document.getElementById('school_name').value;
+            const password = document.getElementById('password').value;
+
+            if (!name || !email || !school_name || !password) {
+                showMessage("Please fill out all fields before continuing.", "error");
+                return;
+            }
+
+            btnNext.disabled = true;
+            btnNext.textContent = 'Sending email...';
+            messageBox.className = 'message-box'; // clear old messages
+
+            try {
+                const response = await fetch('/api/admin/request-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, schoolName: school_name })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Failed to send email');
+
+                // Success: Hide Step 1, Show Step 2
+                showMessage(data.message, "success");
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+                document.getElementById('system_authorization_key').required = true;
+
+            } catch (error) {
+                showMessage(error.message, "error");
+            } finally {
+                btnNext.disabled = false;
+                btnNext.textContent = 'Send Authorization Key';
+            }
+        });
+
+        // --- Handle Going Back to Step 1 ---
+        btnBack.addEventListener('click', () => {
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+            document.getElementById('system_authorization_key').required = false;
+            messageBox.className = 'message-box'; // clear messages
+        });
+
+        // --- Handle Final Submission (Step 2) ---
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verifying...';
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                school_name: document.getElementById('school_name').value,
+                password: document.getElementById('password').value,
+                system_authorization_key: document.getElementById('system_authorization_key').value
+            };
+
+            try {
+                const response = await fetch('/api/admin/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Registration failed');
+
+                showMessage(data.message, "success");
+                registerForm.reset();
+                
+                // Optionally redirect to login after a few seconds
+                setTimeout(() => window.location.href = '/', 2500);
+
+            } catch (error) {
+                showMessage(error.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Finalize Registration';
+            }
+        });
+    </script>
+</body>
+</html>

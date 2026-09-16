@@ -47,7 +47,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- Updated Sidebar Style (from teacher_settings.html) --- */
         .sidebar {
             width: 70px;
             background: var(--sidebar-bg);
@@ -164,7 +163,6 @@
             transition-delay: 0.05s;
         }
 
-        /* --- Main Content Wrapper --- */
         .main-wrapper {
             flex: 1;
             margin-left: 70px;
@@ -174,7 +172,6 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Top Navigation Bar */
         header {
             background: var(--header-bg); 
             backdrop-filter: blur(12px); 
@@ -193,7 +190,6 @@
         .btn-logout { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
 
-        /* Main Workspace Layout */
         .dashboard-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 20px; flex: 1; }
         .welcome-banner { 
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05));
@@ -203,7 +199,6 @@
         .welcome-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
         .welcome-banner p { color: var(--text-muted); font-size: 14px; }
 
-        /* Metric Cards Grid */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .metric-card { 
             background: var(--card-bg); 
@@ -216,7 +211,6 @@
         .metric-value { font-size: 28px; font-weight: 800; color: var(--text-main); }
         .metric-trend { font-size: 12px; color: #3b82f6; margin-top: 5px; font-weight: 600; }
 
-        /* Content Sections */
         .card-section {
             background: var(--card-bg); 
             border: 1px solid var(--border-color); 
@@ -226,7 +220,6 @@
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         .section-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
         
-        /* Table Styles */
         .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         .data-table th { background: var(--table-th-bg); color: var(--text-muted); font-weight: 600; padding: 12px; border-bottom: 1px solid var(--border-color); }
         .data-table td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
@@ -242,7 +235,6 @@
 </head>
 <body>
 
-    <!-- Hover Expandable Sidebar (Styled like teacher_settings.html) -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -259,7 +251,7 @@
                 </a>
             </li>
             <li>
-                <a class="sidebar-item" href="/my_schedule.html">
+                <a class="sidebar-item" href="my_schedule.html">
                     <div class="sidebar-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     </div>
@@ -267,7 +259,7 @@
                 </a>
             </li>
             <li>
-                <a class="sidebar-item" href="/my_students.html">
+                <a class="sidebar-item" href="my_students.html">
                     <div class="sidebar-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     </div>
@@ -275,11 +267,19 @@
                 </a>
             </li>
             <li>
-                <a class="sidebar-item" href="/teacher_communication.html">
+                <a class="sidebar-item" href="teacher_communication.html">
                     <div class="sidebar-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </div>
                     <span class="sidebar-label">Send Notification</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-item" href="teacher_library.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <span class="sidebar-label">Resources library</span>
                 </a>
             </li>
             <li style="margin-top: auto; padding-bottom: 20px;">
@@ -293,12 +293,11 @@
         </ul>
     </aside>
 
-    <!-- Main Content Wrapper -->
     <div class="main-wrapper">
         <header>
             <div class="header-title">Instructor Portal <span style="font-size: 11px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); margin-left: 10px;">Faculty Level</span></div>
             <div class="user-meta">
-                <span id="teacherNameDisplay">Instructor</span>
+                <span id="teacherNameDisplay">Loading...</span>
                 <button class="btn-logout" id="btnLogout">Sign Out</button>
             </div>
         </header>
@@ -307,7 +306,7 @@
             
             <div class="welcome-banner">
                 <div>
-                    <h1 id="welcomeTitle">Welcome back, Professor</h1>
+                    <h1 id="welcomeTitle">Welcome back</h1>
                     <p>Here is your daily lecture breakdown and upcoming automated notification triggers.</p>
                 </div>
                 <button class="btn-action" onclick="alert('View full semester calendar')">View Full Calendar</button>
@@ -374,18 +373,46 @@
     </div>
 
     <script>
-        const savedTheme = localStorage.getItem('lesson_notify_theme'); 
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Query database session endpoint
+                const response = await fetch('http://localhost:5000/api/me', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
 
-        const teacherName = localStorage.getItem('ln_user_name') || 'Instructor';
-        document.getElementById('teacherNameDisplay').textContent = teacherName;
-        document.getElementById('welcomeTitle').textContent = `Welcome back, ${teacherName}`;
+                if (!response.ok) {
+                    window.location.href = 'auth.html?mode=signin';
+                    return;
+                }
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = '/login?mode=signin';
+                const data = await response.json();
+                const teacherName = data.user?.full_name || data.user?.fullName || 'Instructor';
+                const themePreference = data.user?.theme_preference || 'dark';
+
+                if (themePreference === 'light') {
+                    document.body.classList.add('light-mode');
+                }
+
+                document.getElementById('teacherNameDisplay').textContent = teacherName;
+                document.getElementById('welcomeTitle').textContent = `Welcome back, ${teacherName}`;
+            } catch (err) {
+                console.error('Failed to query user profile from database:', err);
+                window.location.href = 'auth.html?mode=signin';
+            }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            try {
+                await fetch('http://localhost:5000/api/logout', { 
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (err) {
+                console.error('Logout failed:', err);
+            }
+            window.location.href = 'auth.html?mode=signin';
         });
     </script>
 </body>

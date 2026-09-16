@@ -43,6 +43,15 @@
             border-color: #10b981;
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
+        /* Light Theme Hover Glows for Inputs */
+        body.light-theme input:hover, body.light-theme select:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+        }
+        /* Light Theme Logo Text Adaptation */
+        body.light-theme .logo-text-lesson {
+            fill: #0f172a;
+        }
 
         #liveWallpaper {
             position: fixed;
@@ -50,13 +59,13 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1;
+            z-index: 1;
             pointer-events: none;
         }
         .auth-card { 
-            background: rgba(11, 15, 25, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; position: relative; z-index: 1;
+            background: rgba(11, 15, 25, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); text-align: center; position: relative; z-index: 10;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
         }
         .auth-card:hover {
@@ -68,12 +77,27 @@
             max-width: 160px; margin: 0 auto 25px auto; background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 6px; 
         }
+        .logo-text-lesson {
+            fill: #ffffff;
+            transition: fill 0.3s ease;
+        }
         h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .subtitle { color: #64748b; font-size: 13.5px; margin-bottom: 30px; }
         .form-group { margin-bottom: 18px; text-align: left; }
         label { display: block; font-size: 12.5px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select { width: 100%; padding: 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #ffffff; font-size: 14.5px; transition: all 0.25s ease; }
-        input:focus, select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        
+        /* Input & Select Hover Glow Styling */
+        input, select { 
+            width: 100%; padding: 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #ffffff; font-size: 14.5px; transition: all 0.25s ease; 
+        }
+        input:hover, select:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+        }
+        input:focus, select:focus { 
+            outline: none; border-color: #10b981; box-shadow: 0 0 14px rgba(16, 185, 129, 0.35); 
+        }
+
         .btn-submit { 
             background: linear-gradient(-45deg, #10b981, #2563eb); background-size: 200% 200%;
             color: #ffffff; border: none; padding: 14px; width: 100%; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s;
@@ -82,6 +106,41 @@
         .toggle-link { color: #10b981; text-decoration: none; font-size: 13.5px; font-weight: 600; display: inline-block; margin-top: 20px; cursor: pointer; transition: color 0.2s; }
         .toggle-link:hover { color: #34d399; }
         .error-banner { display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; text-align: left; }
+
+        /* --- SCHOOL SELECTION POPUP MODAL STYLING --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: #0b0f19; border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px; width: 90%; max-width: 480px; padding: 30px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(16, 185, 129, 0.15);
+            display: flex; flex-direction: column; max-height: 80vh;
+        }
+        body.light-theme .modal-card {
+            background: #ffffff; border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: #fff; }
+        body.light-theme .modal-header h3 { color: #0f172a; }
+        .close-modal { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; line-height: 1; }
+        .close-modal:hover { color: #ef4444; }
+        .search-box-wrapper { margin-bottom: 15px; }
+        .search-box-wrapper input { width: 100%; padding: 12px 14px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #fff; font-size: 14px; }
+        body.light-theme .search-box-wrapper input { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+        .school-list-container { overflow-y: auto; max-height: 280px; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+        .school-item {
+            padding: 12px 16px; background: #111827; border: 1px solid #1f2937; border-radius: 8px;
+            color: #f8fafc; font-size: 14px; cursor: pointer; text-align: left; transition: all 0.2s ease;
+        }
+        .school-item:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        body.light-theme .school-item { background: #f8fafc; border-color: #e2e8f0; color: #0f172a; }
+        body.light-theme .school-item:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.08); }
     </style>
 </head>
 <body>
@@ -91,10 +150,10 @@
 
     <div class="auth-card">
         <div class="logo-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 80" width="100%" height="auto">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 80" width="100%">
               <rect x="10" y="10" width="55" height="60" rx="10" fill="#1e40af" />
               <circle cx="53" cy="22" r="11" fill="#10b981" stroke="#06080f" stroke-width="2.5" />
-              <text x="85" y="52" font-family="sans-serif" font-size="38" font-weight="900" fill="#ffffff">Lesson</text>
+              <text class="logo-text-lesson" x="85" y="52" font-family="sans-serif" font-size="38" font-weight="900" fill="#ffffff">Lesson</text>
               <text x="215" y="52" font-family="sans-serif" font-size="38" font-weight="900" fill="#10b981">Notify</text>
             </svg>
         </div>
@@ -128,7 +187,6 @@
             <div class="form-group" id="roleGroup">
                 <label>Your Institutional Role</label>
                 <select id="signupRole" required>
-                    <option value="admin">Facility Administrator / Owner</option>
                     <option value="teacher">Faculty Instructor / Lecturer</option>
                     <option value="student">Enrolled Student / Learner</option>
                 </select>
@@ -136,23 +194,39 @@
             
             <div class="form-group" id="schoolGroup">
                 <label>Institution / School Name</label>
-                <input type="text" id="signupSchool" placeholder="e.g., 360 Mass Hub" required>
-                <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Admins: Enter your new school name. Staff/Students: Enter your existing facility name exactly.</p>
+                <input type="text" id="schoolSelectBtn" placeholder="Select School" readonly required style="cursor: pointer;">
+                <input type="hidden" id="signupSchoolValue" required>
+                <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Click to choose your registered institutional workspace.</p>
             </div>
-
             <button type="submit" class="btn-submit" id="btnSubmit">Register Workspace</button>
         </form>
 
         <span class="toggle-link" id="authToggle">Already have an account? Sign In</span>
     </div>
 
+    <!-- School Selection Modal Popup -->
+    <div class="modal-overlay" id="schoolModalOverlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Select Your Institution</h3>
+                <button type="button" class="close-modal" id="closeSchoolModal">&times;</button>
+            </div>
+            <div class="search-box-wrapper">
+                <input type="text" id="schoolSearchInput" placeholder="Search school by name...">
+            </div>
+            <div class="school-list-container" id="schoolListContainer">
+                <div class="school-item" style="text-align: center; color: #94a3b8; cursor: default;">Loading schools...</div>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Sync theme with localStorage preference set from welcome.html
         if (localStorage.getItem('lesson_notify_theme') === 'light') {
             document.body.classList.add('light-theme');
         }
 
-        // High-Tech Live Wallpaper Animation Logic
+        // High-Tech Live Wallpaper Animation Logics
         const canvas = document.getElementById('liveWallpaper');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -230,6 +304,87 @@
         const schoolGroup = document.getElementById('schoolGroup');
         const errorBanner = document.getElementById('errorBanner');
 
+        const signupRole = document.getElementById('signupRole');
+        const schoolSelectBtn = document.getElementById('schoolSelectBtn');
+        const signupSchoolValue = document.getElementById('signupSchoolValue');
+        const schoolModalOverlay = document.getElementById('schoolModalOverlay');
+        const closeSchoolModal = document.getElementById('closeSchoolModal');
+        const schoolSearchInput = document.getElementById('schoolSearchInput');
+        const schoolListContainer = document.getElementById('schoolListContainer');
+
+        let allSchools = [];
+
+        // Open modal on click of school select button
+        schoolSelectBtn.addEventListener('click', () => {
+            schoolModalOverlay.classList.add('active');
+            schoolSearchInput.value = '';
+            schoolSearchInput.focus();
+            renderSchoolList(allSchools);
+        });
+
+        // Close modal
+        closeSchoolModal.addEventListener('click', () => {
+            schoolModalOverlay.classList.remove('active');
+        });
+
+        schoolModalOverlay.addEventListener('click', (e) => {
+            if (e.target === schoolModalOverlay) {
+                schoolModalOverlay.classList.remove('active');
+            }
+        });
+
+        // Search/Filter schools live as user types
+        schoolSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allSchools.filter(school => school.toLowerCase().includes(query));
+            renderSchoolList(filtered);
+        });
+
+        function renderSchoolList(schools) {
+            schoolListContainer.innerHTML = '';
+            if (schools.length === 0) {
+                schoolListContainer.innerHTML = '<div class="school-item" style="text-align: center; color: #94a3b8; cursor: default;">No institutions found</div>';
+                return;
+            }
+
+            schools.forEach(schoolName => {
+                const item = document.createElement('div');
+                item.className = 'school-item';
+                item.textContent = schoolName;
+                item.addEventListener('click', () => {
+                    schoolSelectBtn.value = schoolName;
+                    signupSchoolValue.value = schoolName;
+                    schoolSelectBtn.style.color = '#ffffff';
+                    if (document.body.classList.contains('light-theme')) {
+                        schoolSelectBtn.style.color = '#0f172a';
+                    }
+                    schoolModalOverlay.classList.remove('active');
+                });
+                schoolListContainer.appendChild(item);
+            });
+        }
+
+        // Fetch registered schools from database or local storage fallback
+        async function fetchRegisteredSchools() {
+            try {
+                const response = await fetch('http://localhost:5000/api/schools');
+                const data = await response.json();
+                
+                if (data.success && data.schools.length > 0) {
+                    allSchools = data.schools.map(s => s.school_name);
+                } else {
+                    allSchools = [];
+                }
+            } catch (err) {
+                console.warn('Backend unavailable. Falling back to local storage schools.');
+                const users = getStoredUsers();
+                allSchools = [...new Set(users.filter(u => u.school_name).map(u => u.school_name))];
+            }
+        }
+
+        // Initialize schools list on load
+        fetchRegisteredSchools();
+
         function renderAuthState() {
             errorBanner.style.display = 'none';
             
@@ -261,52 +416,84 @@
             renderAuthState();
         });
 
+        function getStoredUsers() {
+            try {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                return Array.isArray(users) ? users : [];
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function redirectByRole(role) {
+            const currentUrl = new URL(window.location.href);
+            const targetFile = role === 'teacher' ? 'teacher.html' : 'student.html';
+            window.location.href = new URL(targetFile, currentUrl.href).href;
+        }
+
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorBanner.style.display = 'none';
+            btnSubmit.textContent = "Processing...";
+            btnSubmit.disabled = true;
 
-            const email = document.getElementById('authEmail').value;
+            const email = document.getElementById('authEmail').value.trim().toLowerCase();
             const password = document.getElementById('authPassword').value;
-            const name = isSignUpMode ? document.getElementById('authName').value : '';
-            const role = document.getElementById('signupRole').value;
-            const phone = isSignUpMode ? document.getElementById('authPhone').value : '';
-            const school_name = isSignUpMode ? document.getElementById('signupSchool').value : '';
-
-            const endpoint = isSignUpMode ? '/api/auth/signup' : '/api/auth/signin';
-            const payload = isSignUpMode ? { email, password, name, role, phone, school_name } : { email, password };
-
+            
             try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                if (isSignUpMode) {
+                    const fullName = document.getElementById('authName').value.trim();
+                    const role = signupRole.value;
+                    const schoolName = signupSchoolValue.value;
 
-                const data = await res.json();
+                    if (!email || !password || !schoolName || !role) {
+                        throw new Error('Please select an institution and fill in all required fields.');
+                    }
 
-                if (!res.ok) {
-                    throw new Error(data.error || "Authentication security trace rejected entry parameters.");
-                }
+                    const response = await fetch('http://localhost:5000/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, email, password, role, schoolName })
+                    });
 
-                localStorage.setItem('ln_user_token', data.token);
-                localStorage.setItem('ln_user_role', data.role);
-                localStorage.setItem('ln_user_name', data.name || "User");
-                localStorage.setItem('ln_user_school_id', data.school_id);
+                    const data = await response.json();
+                    
+                    if (!response.ok) throw new Error(data.error || 'Registration failed');
 
-                // Role-based redirection logic
-                if (data.role === 'admin') {
-                    window.location.href = 'admin.html';
-                } else if (data.role === 'teacher') {
-                    window.location.href = 'teacher.html';
-                } else if (data.role === 'student') {
-                    window.location.href = 'student.html';
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: data.user.user_id,
+                        name: data.user.full_name,
+                        role: data.user.role,
+                        school_name: data.user.school_name
+                    }));
+
+                    redirectByRole(data.user.role);
+
                 } else {
-                    window.location.href = 'admin.html';
-                }
+                    const response = await fetch('http://localhost:5000/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
 
+                    const data = await response.json();
+
+                    if (!response.ok) throw new Error(data.error || 'Login failed');
+
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: data.user.userId,
+                        name: data.user.fullName,
+                        role: data.user.role,
+                        school_name: data.user.schoolName
+                    }));
+
+                    redirectByRole(data.user.role);
+                }
             } catch (err) {
                 errorBanner.textContent = `⚠️ Security Alert: ${err.message}`;
                 errorBanner.style.display = 'block';
+                btnSubmit.textContent = isSignUpMode ? "Register Workspace" : "Secure Sign In";
+                btnSubmit.disabled = false;
             }
         });
 

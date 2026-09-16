@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Viewer | Lesson Notify</title>
+
+<style>
+/* =========================================================
+   LESSON NOTIFY — COURSE VIEWER
+   ========================================================= */
+
+:root {
+    --bg: #030712;
+    --bg-soft: #0b1120;
+    --card: #0f172a;
+    --card-2: #111c31;
+    --border: rgba(148,163,184,.14);
+
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --muted-2: #64748b;
+
+    --purple: #8b5cf6;
+    --purple-dark: #6d28d9;
+    --purple-soft: rgba(139,92,246,.13);
+    --purple-glow: rgba(139,92,246,.32);
+
+    --mint: #10b981;
+    --mint-soft: rgba(16,185,129,.12);
+
+    --danger: #ef4444;
+    --warning: #f59e0b;
+
+    --radius: 18px;
+    --transition: .25s ease;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(109,40,217,.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(16,185,129,.05),
+            transparent 25%
+        ),
+        var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+    height: 70px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 26px;
+
+    background: rgba(3,7,18,.88);
+    border-bottom: 1px solid var(--border);
+
+    backdrop-filter: blur(18px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Same visual language as student.html */
+.brand-logo {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8b5cf6,
+            #6d28d9
+        );
+
+    color: white;
+
+    box-shadow:
+        0 0 22px rgba(139,92,246,.35);
+}
+
+.brand-logo svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.brand-page {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.top-button {
+    height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    background: rgba(15,23,42,.8);
+    color: var(--muted);
+
+    font-size: 13px;
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.top-button:hover {
+    color: white;
+    background: var(--purple-soft);
+    border-color: rgba(139,92,246,.45);
+}
+
+.ask-ai-button {
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(139,92,246,.95),
+            rgba(109,40,217,.95)
+        );
+
+    border-color: rgba(139,92,246,.6);
+
+    box-shadow:
+        0 7px 20px rgba(109,40,217,.22);
+}
+
+.ask-ai-button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #9f6cff,
+            #7c3aed
+        );
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   COURSE SELECTION SCREEN
+   ========================================================= */
+
+.course-selection {
+    max-width: 1250px;
+    margin: 0 auto;
+
+    padding: 50px 26px 70px;
+}
+
+.selection-header {
+    max-width: 720px;
+    margin-bottom: 35px;
+}
+
+.selection-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: var(--mint);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .08em;
+
+    margin-bottom: 10px;
+}
+
+.selection-label::before {
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--mint);
+
+    box-shadow:
+        0 0 10px rgba(16,185,129,.8);
+}
+
+.selection-title {
+    font-size: clamp(30px,4vw,48px);
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+
+    margin-bottom: 12px;
+}
+
+.selection-description {
+    color: var(--muted);
+
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.course-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap: 18px;
+}
+
+.course-card {
+    position: relative;
+
+    padding: 22px;
+
+    min-height: 280px;
+
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,23,42,.95),
+            rgba(9,14,28,.95)
+        );
+
+    overflow: hidden;
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.course-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 170px;
+    height: 170px;
+
+    top: -90px;
+    right: -70px;
+
+    border-radius: 50%;
+
+    background: var(--purple-glow);
+
+    filter: blur(40px);
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(139,92,246,.45);
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        0 0 30px rgba(109,40,217,.08);
+}
+
+.course-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: var(--purple-soft);
+    color: #a78bfa;
+
+    font-size: 20px;
+
+    margin-bottom: 20px;
+}
+
+.course-card h3 {
+    position: relative;
+
+    font-size: 18px;
+    line-height: 1.35;
+
+    margin-bottom: 8px;
+}
+
+.course-code {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-bottom: 17px;
+}
+
+.course-card-progress {
+    margin-top: auto;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-bottom: 7px;
+}
+
+.progress-info strong {
+    color: var(--mint);
+}
+
+.progress-track {
+    height: 6px;
+
+    border-radius: 99px;
+
+    background: #1e293b;
+
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--purple),
+            var(--mint)
+        );
+}
+
+.course-action {
+    width: 100%;
+    height: 42px;
+
+    margin-top: 18px;
+
+    border: 1px solid rgba(139,92,246,.3);
+    border-radius: 10px;
+
+    background: var(--purple-soft);
+    color: #c4b5fd;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.course-action:hover {
+    color: white;
+
+    background: var(--purple);
+
+    border-color: var(--purple);
+
+    box-shadow:
+        0 8px 20px rgba(109,40,217,.25);
+}
+
+/* =========================================================
+   VIEWER
+   ========================================================= */
+
+.viewer {
+    display: none;
+
+    max-width: 1600px;
+
+    margin: 0 auto;
+
+    padding: 25px 24px 50px;
+}
+
+.viewer.active {
+    display: block;
+}
+
+.course-heading {
+    margin-bottom: 18px;
+}
+
+.course-kicker {
+    color: var(--mint);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .08em;
+
+    margin-bottom: 7px;
+}
+
+.course-heading h1 {
+    font-size: clamp(25px,3vw,38px);
+
+    line-height: 1.1;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 6px;
+}
+
+.course-heading p {
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+/* =========================================================
+   OVERALL COURSE PROGRESS
+   ========================================================= */
+
+.course-progress-card {
+    padding: 17px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background: rgba(15,23,42,.72);
+}
+
+.course-progress-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 9px;
+
+    font-size: 12px;
+}
+
+.course-progress-top span {
+    color: var(--muted);
+}
+
+.course-progress-top strong {
+    color: var(--mint);
+}
+
+.progress-track.large {
+    height: 8px;
+}
+
+/* =========================================================
+   VIEWER GRID
+   ========================================================= */
+
+.viewer-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 7fr)
+        minmax(300px, 3fr);
+
+    gap: 20px;
+}
+
+/* =========================================================
+   LEARNING CONTENT
+   ========================================================= */
+
+.learning-area {
+    min-width: 0;
+}
+
+.media-player {
+    position: relative;
+
+    min-height: 475px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(109,40,217,.2),
+            transparent 40%
+        ),
+        #020617;
+}
+
+.media-grid {
+    position: absolute;
+    inset: 0;
+
+    opacity: .15;
+
+    background-image:
+        linear-gradient(
+            rgba(148,163,184,.1) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(148,163,184,.1) 1px,
+            transparent 1px
+        );
+
+    background-size: 35px 35px;
+}
+
+.media-content {
+    position: relative;
+    z-index: 2;
+
+    text-align: center;
+
+    max-width: 600px;
+
+    padding: 30px;
+}
+
+.play-button {
+    width: 78px;
+    height: 78px;
+
+    border: 0;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8b5cf6,
+            #6d28d9
+        );
+
+    color: white;
+
+    box-shadow:
+        0 0 0 11px rgba(139,92,246,.08),
+        0 0 40px rgba(139,92,246,.35);
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.play-button:hover {
+    transform: scale(1.06);
+}
+
+.media-content h2 {
+    font-size: 23px;
+    margin-bottom: 8px;
+}
+
+.media-content p {
+    color: var(--muted);
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.lesson-tag {
+    display: inline-flex;
+
+    margin-top: 16px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    color: #c4b5fd;
+
+    background: var(--purple-soft);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   COURSE REQUIREMENTS
+   ========================================================= */
+
+.course-requirements {
+    margin-top: 20px;
+
+    padding: 21px;
+
+    border: 1px solid var(--border);
+    border-radius: 18px;
+
+    background: rgba(15,23,42,.75);
+}
+
+.section-title {
+    font-size: 17px;
+
+    margin-bottom: 5px;
+}
+
+.section-subtitle {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-bottom: 17px;
+}
+
+.requirement-list {
+    display: grid;
+
+    gap: 9px;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    background: rgba(30,41,59,.45);
+}
+
+.requirement-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 34px;
+
+    border-radius: 9px;
+
+    background: var(--purple-soft);
+    color: #a78bfa;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.requirement.completed .requirement-icon {
+    background: var(--mint-soft);
+    color: var(--mint);
+}
+
+.requirement-text {
+    flex: 1;
+}
+
+.requirement-name {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.requirement-description {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 3px;
+}
+
+.requirement-status {
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.requirement.completed .requirement-status {
+    color: var(--mint);
+}
+
+/* =========================================================
+   COURSE INFORMATION
+   ========================================================= */
+
+.course-info {
+    margin-top: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap: 12px;
+}
+
+.info-card {
+    padding: 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    background: rgba(15,23,42,.7);
+}
+
+.info-label {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   AI DRAWER
+   ========================================================= */
+
+.ai-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 1998;
+
+    background: rgba(0,0,0,.48);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .3s ease;
+
+    backdrop-filter: blur(2px);
+}
+
+.ai-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.ai-drawer {
+    position: fixed;
+
+    z-index: 2000;
+
+    top: 70px;
+    right: 0;
+    bottom: 0;
+
+    width: min(420px,100%);
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        linear-gradient(
+            180deg,
+            #0b1324,
+            #07101f
+        );
+
+    border-left: 1px solid var(--border);
+
+    box-shadow:
+        -20px 0 60px rgba(0,0,0,.4);
+
+    transform: translateX(100%);
+
+    transition: transform .3s ease;
+}
+
+.ai-drawer.open {
+    transform: translateX(0);
+}
+
+.ai-header {
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 17px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.ai-title-area {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.ai-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        );
+
+    box-shadow:
+        0 0 20px var(--purple-glow);
+}
+
+.ai-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ai-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    color: var(--mint);
+
+    font-size: 10px;
+
+    margin-top: 3px;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--mint);
+
+    box-shadow:
+        0 0 8px rgba(16,185,129,.7);
+}
+
+.close-ai {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: transparent;
+    color: var(--muted);
+
+    cursor: pointer;
+}
+
+.close-ai:hover {
+    color: white;
+    background: var(--purple-soft);
+}
+
+.chat-messages {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 18px;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(139,92,246,.35);
+    border-radius: 10px;
+}
+
+.message {
+    display: flex;
+
+    margin-bottom: 15px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message.ai {
+    justify-content: flex-start;
+}
+
+.bubble {
+    max-width: 84%;
+
+    padding: 11px 13px;
+
+    border-radius: 13px;
+
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.message.ai .bubble {
+    color: #cbd5e1;
+
+    background: #1e293b;
+
+    border: 1px solid rgba(148,163,184,.13);
+
+    border-top-left-radius: 4px;
+}
+
+.message.user .bubble {
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        );
+
+    border-top-right-radius: 4px;
+}
+
+.message-time {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 9px;
+
+    opacity: .55;
+}
+
+/* =========================================================
+   AI QUICK ACTIONS + INPUT
+   ========================================================= */
+
+.ai-bottom {
+    padding: 12px;
+
+    border-top: 1px solid var(--border);
+
+    background: rgba(2,6,23,.5);
+}
+
+.quick-actions {
+    display: flex;
+
+    gap: 7px;
+
+    overflow-x: auto;
+
+    padding-bottom: 10px;
+}
+
+.quick-action {
+    flex: 0 0 auto;
+
+    padding: 7px 9px;
+
+    border: 1px solid rgba(139,92,246,.3);
+    border-radius: 8px;
+
+    background: var(--purple-soft);
+    color: #c4b5fd;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.quick-action:hover {
+    color: white;
+    background: var(--purple);
+}
+
+.chat-form {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 43px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #1e293b;
+    color: white;
+
+    font-size: 12px;
+}
+
+.chat-input::placeholder {
+    color: #64748b;
+}
+
+.chat-input:focus {
+    border-color: rgba(139,92,246,.55);
+
+    box-shadow:
+        0 0 0 3px rgba(139,92,246,.08);
+}
+
+.send-button {
+    width: 43px;
+    height: 43px;
+
+    flex: 0 0 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: var(--purple);
+    color: white;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:1100px) {
+
+    .course-grid {
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+    .viewer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-info {
+        grid-template-columns:
+            repeat(3,minmax(0,1fr));
+    }
+}
+
+@media(max-width:700px) {
+
+    .topbar {
+        padding: 0 14px;
+    }
+
+    .brand-name {
+        font-size: 14px;
+    }
+
+    .brand-page {
+        display: none;
+    }
+
+    .back-text {
+        display: none;
+    }
+
+    .top-button {
+        width: 40px;
+        padding: 0;
+    }
+
+    .ask-ai-button {
+        width: auto;
+        padding: 0 12px;
+    }
+
+    .course-selection {
+        padding: 35px 16px;
+    }
+
+    .course-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .viewer {
+        padding: 22px 15px 40px;
+    }
+
+    .media-player {
+        min-height: 300px;
+    }
+
+    .course-info {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-drawer {
+        width: 100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================================================
+     TOP NAVIGATION
+     ========================================================= -->
+
+<header class="topbar">
+
+<div class="brand">
+
+    <!-- Same LN-style mark used by Student Dashboard -->
+    <div class="brand-logo">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+    </svg>
+</div>
+
+    <div class="brand-info">
+        <div class="brand-name">
+            Lesson<span style="color: #10b981;">Notify</span>
+        </div>
+
+        <div class="brand-page">
+            Course Viewer
+        </div>
+    </div>
+
+</div>
+
+
+<div class="top-actions">
+
+    <button
+        class="top-button"
+        onclick="goDashboard()"
+    >
+        <svg width="16" height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+
+        <span class="back-text">
+            Back to Dashboard
+        </span>
+    </button>
+
+
+    <!-- ASK AI REPLACES THEME BUTTON -->
+
+    <button
+        class="top-button ask-ai-button"
+        onclick="openAI()"
+    >
+
+        <svg width="16" height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <rect x="4" y="8" width="16" height="11" rx="2"></rect>
+            <path d="M8 8V5h4"></path>
+            <circle cx="9" cy="13" r="1"></circle>
+            <circle cx="15" cy="13" r="1"></circle>
+            <path d="M9 16h6"></path>
+        </svg>
+
+        Ask AI
+
+    </button>
+
+</div>
+
+</header>
+
+<!-- =========================================================
+     COURSE SELECTION
+     This is shown first when no course has been selected.
+     ========================================================= -->
+
+<section
+    class="course-selection"
+    id="courseSelection"
+>
+
+<div class="selection-header">
+
+    <div class="selection-label">
+        My Courses
+    </div>
+
+    <h1 class="selection-title">
+        What do you want to learn today?
+    </h1>
+
+    <p class="selection-description">
+        Select a course to continue your learning journey.
+        You'll be able to see your progress, course requirements,
+        lessons and learning materials before you begin.
+    </p>
+
+</div>
+
+
+<div class="course-grid">
+
+
+    <!-- COURSE 1 -->
+
+    <article class="course-card">
+
+        <div class="course-icon">
+            &lt;/&gt;
+        </div>
+
+        <h3>
+            Introduction to Computer Science
+        </h3>
+
+        <div class="course-code">
+            CSC 101 • First Semester
+        </div>
+
+        <div class="course-card-progress">
+
+            <div class="progress-info">
+
+                <span>
+                    Progress
+                </span>
+
+                <strong>
+                    64%
+                </strong>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    style="width:64%"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="course-action"
+            onclick="selectCourse('CSC101')"
+        >
+            Continue Course
+        </button>
+
+    </article>
+
+
+    <!-- COURSE 2 -->
+
+    <article class="course-card">
+
+        <div class="course-icon">
+            ∑
+        </div>
+
+        <h3>
+            Mathematics for Computing
+        </h3>
+
+        <div class="course-code">
+            MTH 101 • First Semester
+        </div>
+
+        <div class="course-card-progress">
+
+            <div class="progress-info">
+
+                <span>
+                    Progress
+                </span>
+
+                <strong>
+                    38%
+                </strong>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    style="width:38%"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="course-action"
+            onclick="selectCourse('MTH101')"
+        >
+            Continue Course
+        </button>
+
+    </article>
+
+
+    <!-- COURSE 3 -->
+
+    <article class="course-card">
+
+        <div class="course-icon">
+            DB
+        </div>
+
+        <h3>
+            Database Fundamentals
+        </h3>
+
+        <div class="course-code">
+            CSC 203 • Second Semester
+        </div>
+
+        <div class="course-card-progress">
+
+            <div class="progress-info">
+
+                <span>
+                    Progress
+                </span>
+
+                <strong>
+                    12%
+                </strong>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    style="width:12%"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="course-action"
+            onclick="selectCourse('CSC203')"
+        >
+            Start Course
+        </button>
+
+    </article>
+
+</div>
+```
+
+</section>
+
+<!-- =========================================================
+     COURSE VIEWER
+     ========================================================= -->
+
+<main
+    class="viewer"
+    id="courseViewer"
+>
+
+<div class="course-heading">
+
+    <div class="course-kicker">
+        Currently Learning
+    </div>
+
+    <h1 id="viewerCourseTitle">
+        Introduction to Computer Science
+    </h1>
+
+    <p id="viewerCourseMeta">
+        CSC 101 • Dr. Samuel Ibrahim • First Semester
+    </p>
+
+</div>
+
+
+<!-- COURSE PROGRESS -->
+
+<div class="course-progress-card">
+
+    <div class="course-progress-top">
+
+        <span>
+            Overall Course Progress
+        </span>
+
+        <strong id="overallProgress">
+            64%
+        </strong>
+
+    </div>
+
+    <div class="progress-track large">
+
+        <div
+            class="progress-fill"
+            id="overallProgressBar"
+            style="width:64%"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<div class="viewer-grid">
+
+
+    <!-- =====================================================
+         LEFT LEARNING AREA
+         ===================================================== -->
+
+    <section class="learning-area">
+
+
+        <!-- VIDEO / PDF -->
+
+        <div class="media-player">
+
+            <div class="media-grid"></div>
+
+            <div class="media-content">
+
+                <button
+                    class="play-button"
+                    onclick="startLesson()"
+                >
+
+                    <svg
+                        width="29"
+                        height="29"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                    >
+                        <path d="M8 5v14l11-7z"></path>
+                    </svg>
+
+                </button>
+
+                <h2 id="lessonTitle">
+                    Chapter 4 — Data Structures
+                </h2>
+
+                <p>
+                    Start this lesson to continue your course.
+                    Your video lesson or textbook will appear here.
+                </p>
+
+                <div class="lesson-tag">
+                    Lesson 4 of 8
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             WHAT YOU NEED TO COMPLETE
+             ================================================= -->
+
+        <section class="course-requirements">
+
+            <h2 class="section-title">
+                What you need to complete this course
+            </h2>
+
+            <p class="section-subtitle">
+                Complete all required learning activities to
+                finish this course.
+            </p>
+
+
+            <div class="requirement-list">
+
+
+                <div class="requirement completed">
+
+                    <div class="requirement-icon">
+                        ✓
+                    </div>
+
+                    <div class="requirement-text">
+
+                        <div class="requirement-name">
+                            Complete Lessons 1–3
+                        </div>
+
+                        <div class="requirement-description">
+                            Watch the lessons and review the
+                            accompanying materials.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement-status">
+                        Completed
+                    </div>
+
+                </div>
+
+
+                <div class="requirement">
+
+                    <div class="requirement-icon">
+                        04
+                    </div>
+
+                    <div class="requirement-text">
+
+                        <div class="requirement-name">
+                            Complete Chapter 4
+                        </div>
+
+                        <div class="requirement-description">
+                            Watch the Data Structures lesson
+                            and review the textbook.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement-status">
+                        Current
+                    </div>
+
+                </div>
+
+
+                <div class="requirement">
+
+                    <div class="requirement-icon">
+                        05
+                    </div>
+
+                    <div class="requirement-text">
+
+                        <div class="requirement-name">
+                            Complete Chapter 5
+                        </div>
+
+                        <div class="requirement-description">
+                            Complete the next lesson and
+                            learning materials.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement-status">
+                        Pending
+                    </div>
+
+                </div>
+
+
+                <div class="requirement">
+
+                    <div class="requirement-icon">
+                        Q
+                    </div>
+
+                    <div class="requirement-text">
+
+                        <div class="requirement-name">
+                            Pass Final Course Assessment
+                        </div>
+
+                        <div class="requirement-description">
+                            Complete the final assessment
+                            after all lessons are finished.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement-status">
+                        Pending
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COURSE INFORMATION -->
+
+        <div class="course-info">
+
+            <div class="info-card">
+
+                <div class="info-label">
+                    LESSONS
+                </div>
+
+                <div class="info-value">
+                    8 Lessons
+                </div>
+
+            </div>
+
+            <div class="info-card">
+
+                <div class="info-label">
+                    COMPLETED
+                </div>
+
+                <div class="info-value">
+                    3 of 8
+                </div>
+
+            </div>
+
+            <div class="info-card">
+
+                <div class="info-label">
+                    EST. TIME LEFT
+                </div>
+
+                <div class="info-value">
+                    4h 20m
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+</main>
+
+<!-- =========================================================
+     AI OVERLAY
+     ========================================================= -->
+
+<div
+    class="ai-overlay"
+    id="aiOverlay"
+    onclick="closeAI()"
+></div>
+
+<!-- =========================================================
+     AI DRAWER
+     ========================================================= -->
+
+<aside
+    class="ai-drawer"
+    id="aiDrawer"
+>
+
+
+<div class="ai-header">
+
+    <div class="ai-title-area">
+
+        <div class="ai-avatar">
+
+            <svg
+                width="21"
+                height="21"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <rect
+                    x="4"
+                    y="8"
+                    width="16"
+                    height="11"
+                    rx="2"
+                ></rect>
+
+                <path d="M8 8V5h4"></path>
+
+                <circle
+                    cx="9"
+                    cy="13"
+                    r="1"
+                ></circle>
+
+                <circle
+                    cx="15"
+                    cy="13"
+                    r="1"
+                ></circle>
+
+                <path d="M9 16h6"></path>
+            </svg>
+
+        </div>
+
+        <div>
+
+            <div class="ai-title">
+                AI Study Assistant
+            </div>
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                Ready to help
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="close-ai"
+        onclick="closeAI()"
+        title="Close AI"
+    >
+
+        <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <line
+                x1="18"
+                y1="6"
+                x2="6"
+                y2="18"
+            ></line>
+
+            <line
+                x1="6"
+                y1="6"
+                x2="18"
+                y2="18"
+            ></line>
+        </svg>
+
+    </button>
+
+</div>
+
+
+<!-- CHAT -->
+
+<div
+    class="chat-messages"
+    id="chatMessages"
+>
+
+    <div class="message ai">
+
+        <div class="bubble">
+
+            Hi! I'm your AI Study Assistant.
+            Ask me anything about your selected course
+            or current lesson.
+
+            <span class="message-time">
+                AI Tutor • Now
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CHAT CONTROLS -->
+
+<div class="ai-bottom">
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-action"
+            onclick="quickAction('Summarize this chapter')"
+        >
+            Summarize Chapter
+        </button>
+
+        <button
+            class="quick-action"
+            onclick="quickAction('Generate a quiz for this lesson')"
+        >
+            Generate Quiz
+        </button>
+
+        <button
+            class="quick-action"
+            onclick="quickAction('Explain this topic')"
+        >
+            Explain Topic
+        </button>
+
+        <button
+            class="quick-action"
+            onclick="quickAction('Give me examples')"
+        >
+            Give Examples
+        </button>
+
+    </div>
+
+
+    <form
+        class="chat-form"
+        id="chatForm"
+    >
+
+        <input
+            class="chat-input"
+            id="chatInput"
+            type="text"
+            placeholder="Ask your AI tutor..."
+            autocomplete="off"
+        >
+
+        <button
+            class="send-button"
+            type="submit"
+        >
+
+            <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <line
+                    x1="22"
+                    y1="2"
+                    x2="11"
+                    y2="13"
+                ></line>
+
+                <polygon
+                    points="22 2 15 22 11 13 2 9 22 2"
+                ></polygon>
+            </svg>
+
+        </button>
+
+    </form>
+
+</div>
+
+
+</aside>
+
+<script>
+/* =========================================================
+   COURSE DATA
+   ========================================================= */
+
+const courses = {
+
+    CSC101: {
+        title: "Introduction to Computer Science",
+        code: "CSC 101",
+        lecturer: "Dr. Samuel Ibrahim",
+        semester: "First Semester",
+        progress: 64,
+        lesson: "Chapter 4 — Data Structures"
+    },
+
+    MTH101: {
+        title: "Mathematics for Computing",
+        code: "MTH 101",
+        lecturer: "Dr. Amina Yusuf",
+        semester: "First Semester",
+        progress: 38,
+        lesson: "Chapter 3 — Functions"
+    },
+
+    CSC203: {
+        title: "Database Fundamentals",
+        code: "CSC 203",
+        lecturer: "Mr. David Musa",
+        semester: "Second Semester",
+        progress: 12,
+        lesson: "Chapter 1 — Introduction to Databases"
+    }
+
+};
+
+
+/* =========================================================
+   INITIAL PAGE STATE
+   ========================================================= */
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const selectedCourse =
+    params.get("course");
+
+if (selectedCourse && courses[selectedCourse]) {
+
+    selectCourse(selectedCourse, false);
+
+}
+
+
+/* =========================================================
+   SELECT COURSE
+   ========================================================= */
+
+function selectCourse(courseId, updateURL = true) {
+
+    const course =
+        courses[courseId];
+
+    if (!course) return;
+
+
+    if (updateURL) {
+
+        const newURL =
+            `${window.location.pathname}?course=${courseId}`;
+
+        window.history.pushState(
+            {},
+            "",
+            newURL
+        );
+
+    }
+
+
+    document
+        .getElementById("courseSelection")
+        .style.display = "none";
+
+
+    document
+        .getElementById("courseViewer")
+        .classList.add("active");
+
+
+    document
+        .getElementById("viewerCourseTitle")
+        .textContent = course.title;
+
+
+    document
+        .getElementById("viewerCourseMeta")
+        .textContent =
+        `${course.code} • ${course.lecturer} • ${course.semester}`;
+
+
+    document
+        .getElementById("overallProgress")
+        .textContent =
+        `${course.progress}%`;
+
+
+    document
+        .getElementById("overallProgressBar")
+        .style.width =
+        `${course.progress}%`;
+
+
+    document
+        .getElementById("lessonTitle")
+        .textContent =
+        course.lesson;
+
+}
+
+
+/* =========================================================
+   BACK TO DASHBOARD
+   ========================================================= */
+
+function goDashboard() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+/* =========================================================
+   AI DRAWER
+   ========================================================= */
+
+function openAI() {
+
+    document
+        .getElementById("aiDrawer")
+        .classList.add("open");
+
+    document
+        .getElementById("aiOverlay")
+        .classList.add("open");
+
+    setTimeout(() => {
+
+        document
+            .getElementById("chatInput")
+            .focus();
+
+    }, 300);
+
+}
+
+
+function closeAI() {
+
+    document
+        .getElementById("aiDrawer")
+        .classList.remove("open");
+
+    document
+        .getElementById("aiOverlay")
+        .classList.remove("open");
+
+}
+
+
+/* =========================================================
+   ESCAPE KEY CLOSES AI
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+            closeAI();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CHAT
+   ========================================================= */
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const chatInput =
+    document.getElementById("chatInput");
+
+const chatForm =
+    document.getElementById("chatForm");
+
+
+function getTime() {
+
+    return new Date().toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
+
+function addMessage(text, type) {
+
+    const message =
+        document.createElement("div");
+
+    message.className =
+        `message ${type}`;
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "bubble";
+
+
+    bubble.innerHTML = `
+        ${escapeHTML(text)}
+
+        <span class="message-time">
+            ${type === "user" ? "You" : "AI Tutor"}
+            • ${getTime()}
+        </span>
+    `;
+
+
+    message.appendChild(bubble);
+
+    chatMessages.appendChild(message);
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   AI SIMULATOR
+   ========================================================= */
+
+function aiReply(question) {
+
+    setTimeout(() => {
+
+        let response =
+            "I'm ready to help you understand this course. Once the AI service is connected, I'll answer using your actual course materials.";
+
+        const lower =
+            question.toLowerCase();
+
+
+        if (lower.includes("summarize")) {
+
+            response =
+                "Sure. I can summarize the selected chapter into the key concepts, definitions and important points you need to remember.";
+
+        }
+        else if (lower.includes("quiz")) {
+
+            response =
+                "I can generate a practice quiz from the current lesson, including multiple-choice and short-answer questions.";
+
+        }
+        else if (lower.includes("explain")) {
+
+            response =
+                "I can break the topic down into simpler steps and provide examples so it is easier to understand.";
+
+        }
+        else if (lower.includes("example")) {
+
+            response =
+                "I can give you practical examples related to the current lesson and explain how they work.";
+
+        }
+
+
+        addMessage(
+            response,
+            "ai"
+        );
+
+    }, 1000);
+
+}
+
+
+/* =========================================================
+   SEND CHAT
+   ========================================================= */
+
+chatForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const text =
+            chatInput.value.trim();
+
+
+        if (!text) return;
+
+
+        addMessage(
+            text,
+            "user"
+        );
+
+
+        chatInput.value = "";
+
+
+        aiReply(text);
+
+    }
+);
+
+
+/* =========================================================
+   QUICK ACTION
+   ========================================================= */
+
+function quickAction(text) {
+
+    addMessage(
+        text,
+        "user"
+    );
+
+    aiReply(text);
+
+}
+
+
+/* =========================================================
+   START LESSON
+   ========================================================= */
+
+function startLesson() {
+
+    alert(
+        "The lesson player will open here when your video/PDF course content is connected."
+    );
+
+}
+</script>
+
+</body>
+</html>

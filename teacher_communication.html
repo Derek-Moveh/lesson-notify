@@ -256,6 +256,14 @@
                     <span class="sidebar-label">Send Notification</span>
                 </a>
             </li>
+             <li>
+                <a class="sidebar-item" href="teacher_library.html">
+                    <div class="sidebar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <span class="sidebar-label">Resources library</span>
+                </a>
+            </li>
             <li style="margin-top: auto; padding-bottom: 20px;">
                 <a class="sidebar-item" href="teacher_settings.html">
                     <div class="sidebar-icon">
@@ -358,19 +366,145 @@
             </div>
         </div>
     </div>
-
     <script>
-        // Check for Light Mode
-        const savedTheme = localStorage.getItem('lesson_notify_theme'); 
-        if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
+    // Check for Light Mode
+    const savedTheme = localStorage.getItem('lesson_notify_theme'); 
+    if (savedTheme === 'light') { document.body.classList.add('light-mode'); }
 
-        const adminName = localStorage.getItem('ln_user_name') || 'Workspace Admin';
-        document.getElementById('adminNameDisplay').textContent = adminName;
+    const teacherName = localStorage.getItem('ln_user_name') || 'Zeeno Moveh';
+    document.getElementById('teacherNameDisplay').textContent = teacherName;
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = '/login?mode=signin';
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = '/auth.html?mode=signin';
+    });
+
+    // Helper functions for dynamic UI switching
+    function setupDynamicUI() {
+        const formSections = document.querySelectorAll('.card-section')[0];
+        const deliverySelect = formSections.querySelectorAll('select.form-control')[1];
+        
+        // Add dynamic input containers if they don't exist
+        if (!document.getElementById('teacherPhoneGroup')) {
+            const phoneDiv = document.createElement('div');
+            phoneDiv.className = 'form-group';
+            phoneDiv.id = 'teacherPhoneGroup';
+            phoneDiv.style.display = 'none';
+            phoneDiv.innerHTML = `
+                <label class="form-label">Recipient Phone Number (with country code)</label>
+                <input type="text" id="teacherPhoneInput" class="form-control" placeholder="+1234567890">
+            `;
+            deliverySelect.closest('.form-group').after(phoneDiv);
+        }
+
+        if (!document.getElementById('teacherEmailSubjectGroup')) {
+            const subjectDiv = document.createElement('div');
+            subjectDiv.className = 'form-group';
+            subjectDiv.id = 'teacherEmailSubjectGroup';
+            subjectDiv.innerHTML = `
+                <label class="form-label">Email Subject Line</label>
+                <input type="text" id="teacherSubjectInput" class="form-control" placeholder="Class Announcement">
+            `;
+            deliverySelect.closest('.form-group').after(subjectDiv);
+        }
+
+        // Handle delivery channel selection changes
+        deliverySelect.addEventListener('change', (e) => {
+            const channel = e.target.value;
+            const phoneGrp = document.getElementById('teacherPhoneGroup');
+            const subjectGrp = document.getElementById('teacherEmailSubjectGroup');
+
+            if (channel === 'SMS Only') {
+                phoneGrp.style.display = 'block';
+                subjectGrp.style.display = 'none';
+            } else if (channel === 'Email Only') {
+                phoneGrp.style.display = 'none';
+                subjectGrp.style.display = 'block';
+            } else { // SMS & Email Notification
+                phoneGrp.style.display = 'block';
+                subjectGrp.style.display = 'block';
+            }
         });
-    </script>
+    }
+
+    // Initialize UI adjustments
+    setupDynamicUI();
+
+    // Trigger notification delivery
+    async function handleSendBroadcast() {
+        const cardSection = document.querySelectorAll('.card-section')[0];
+        const targetClass = cardSection.querySelectorAll('select.form-control')[0].value;
+        const channel = cardSection.querySelectorAll('select.form-control')[1].value;
+        const messageBody = cardSection.querySelector('textarea.form-control').value.trim();
+        const schoolName = localStorage.getItem('ln_school_name') || 'Lesson Notify Academy';
+
+        if (!messageBody) {
+            alert('Please enter a message announcement before sending.');
+            return;
+        }
+
+        let sendSMS = channel === 'SMS Only' || channel === 'SMS & Email Notification';
+        let sendEmail = channel === 'Email Only' || channel === 'SMS & Email Notification';
+
+        // Dispatch SMS
+        if (sendSMS) {
+            const phoneInput = document.getElementById('teacherPhoneInput');
+            const phoneNumber = phoneInput ? phoneInput.value.trim() : '';
+
+            if (!phoneNumber) {
+                alert('Please enter a valid recipient phone number for SMS delivery.');
+                return;
+            }
+
+            try {
+                const smsRes = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipientPhone: phoneNumber, messageBody: messageBody })
+                });
+                const smsData = await smsRes.json();
+                if (!smsData.success) {
+                    alert('SMS Error: ' + smsData.error);
+                } else {
+                    alert('SMS dispatched successfully!');
+                }
+            } catch (err) {
+                console.error('SMS Request failed:', err);
+            }
+        }
+
+        // Dispatch Email
+        if (sendEmail) {
+            const subjectInput = document.getElementById('teacherSubjectInput');
+            const subject = subjectInput ? subjectInput.value.trim() : 'New Class Announcement';
+
+            try {
+                const emailRes = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subject: `[${targetClass}] ${subject}`,
+                        messageBody: messageBody,
+                        schoolName: schoolName,
+                        recipientType: 'students' // Defaults to notifying enrolled students
+                    })
+                });
+                const emailData = await emailRes.json();
+                if (!emailData.success) {
+                    alert('Email Error: ' + emailData.error);
+                } else {
+                    alert(emailData.message);
+                }
+            } catch (err) {
+                console.error('Email Request failed:', err);
+            }
+        }
+    }
+
+    // Attach handler to the button
+    const sendBtn = document.querySelectorAll('.card-section')[0].querySelector('button.btn-primary');
+    sendBtn.removeAttribute('onclick');
+    sendBtn.addEventListener('click', handleSendBroadcast);
+</script>
 </body>
 </html>
